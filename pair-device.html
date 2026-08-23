@@ -1,0 +1,219 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>VEIL — Hubungkan Perangkat</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-family: Arial, sans-serif;
+      color: white;
+
+      background:
+        linear-gradient(
+          rgba(0,0,0,.65),
+          rgba(0,0,0,.88)
+        ),
+        url("veil-bg.jpg");
+
+      background-size: cover;
+      background-position: center;
+    }
+
+    .box {
+      width: 90%;
+      max-width: 450px;
+      padding: 30px;
+
+      background: rgba(15,15,20,.9);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 20px;
+
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    }
+
+    h1 {
+      letter-spacing: 8px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #aaa;
+      line-height: 1.6;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px;
+      margin: 20px 0 12px;
+
+      border: 1px solid #333;
+      border-radius: 10px;
+
+      background: #09090c;
+      color: white;
+
+      text-align: center;
+      font-size: 22px;
+      letter-spacing: 5px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+
+      border: none;
+      border-radius: 10px;
+
+      background: #d00000;
+      color: white;
+
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    #message {
+      margin-top: 18px;
+      min-height: 22px;
+      color: #aaa;
+    }
+
+    .success {
+      color: #55ff88 !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+
+    <h1>VEIL</h1>
+
+    <h2>Hubungkan Perangkat</h2>
+
+    <p>
+      Masukkan kode pairing yang diberikan
+      oleh pemilik akun VEIL.
+    </p>
+
+    <input
+      id="pairCode"
+      type="text"
+      inputmode="numeric"
+      maxlength="6"
+      placeholder="000000"
+    >
+
+    <button id="pairButton">
+      HUBUNGKAN
+    </button>
+
+    <div id="message"></div>
+
+  </div>
+
+  <script>
+
+    const pairCode =
+      document.getElementById("pairCode");
+
+    const pairButton =
+      document.getElementById("pairButton");
+
+    const message =
+      document.getElementById("message");
+
+    const SERVER_URL =
+      "https://survivor-asus-excitement-openings.trycloudflare.com";
+
+
+    pairButton.addEventListener("click", async () => {
+
+      const code = pairCode.value.trim();
+
+      if (!/^\d{6}$/.test(code)) {
+
+        message.textContent =
+          "Masukkan kode pairing 6 digit.";
+
+        return;
+      }
+
+      pairButton.disabled = true;
+
+      message.textContent =
+        "Menghubungkan perangkat...";
+
+      try {
+
+        const response = await fetch(
+          `${SERVER_URL}/api/pair-device`,
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+              code: code
+            })
+          }
+        );
+
+        const result =
+          await response.json();
+
+        if (!response.ok || !result.success) {
+
+          message.textContent =
+            result.message ||
+            "Kode pairing tidak valid.";
+
+          return;
+        }
+
+        message.classList.add("success");
+
+        message.textContent =
+          "✅ Perangkat berhasil terhubung.";
+
+      } catch (error) {
+
+        console.error(error);
+
+        message.textContent =
+          "Server VEIL tidak dapat dihubungi.";
+
+      } finally {
+
+        pairButton.disabled = false;
+
+      }
+
+    });
+
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VEIL — Lost Phone Protection</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="container">
+
+    <header>
+      <h1>VEIL</h1>
+      <p>Lost Phone Protection System</p>
+    </header>
+
+    <main class="card">
+
+      <h2>Verifikasi Email</h2>
+      <p class="description">
+        Masukkan email pemilik perangkat untuk memulai.
+      </p>
+
+      <input
+        type="email"
+        id="email"
+        placeholder="contoh@email.com"
+      >
+
+      <button id="sendOtp">
+        Kirim OTP
+      </button>
+
+      <div id="otpSection" class="hidden">
+
+        <input
+          type="text"
+          id="otp"
+          maxlength="6"
+          placeholder="Masukkan 6 digit OTP"
+        >
+
+        <button id="verifyOtp">
+          Verifikasi OTP
+        </button>
+
+      </div>
+
+      <p id="message"></p>
+
+    </main>
+
+  </div>
+
+  <script src="app.js"></script>
+
+</body>
+</html>

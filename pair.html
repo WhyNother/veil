@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>VEIL — Tambah HP</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-family: Arial, sans-serif;
+      color: white;
+
+      background:
+        linear-gradient(
+          rgba(0,0,0,.65),
+          rgba(0,0,0,.85)
+        ),
+        url("veil-bg.jpg");
+
+      background-size: cover;
+      background-position: center;
+    }
+
+    .box {
+      width: 90%;
+      max-width: 500px;
+
+      padding: 30px;
+
+      background: rgba(15,15,20,.88);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 20px;
+
+      text-align: center;
+
+      box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    }
+
+    h1 {
+      letter-spacing: 8px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #aaa;
+      line-height: 1.6;
+    }
+
+    .code {
+      margin: 30px 0;
+      padding: 20px;
+
+      border-radius: 14px;
+      background: #09090c;
+      border: 1px solid #333;
+
+      font-size: 34px;
+      font-weight: bold;
+      letter-spacing: 8px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+
+      border: none;
+      border-radius: 10px;
+
+      background: #d00000;
+      color: white;
+
+      font-size: 16px;
+      font-weight: bold;
+
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #ef0000;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+
+    <h1>VEIL</h1>
+
+    <h2>Tambah HP</h2>
+
+    <p>
+      Buka aplikasi VEIL pada HP milik kamu,
+      lalu masukkan kode pairing berikut.
+    </p>
+
+    <div class="code" id="pairCode">
+      ------ 
+    </div>
+
+    <p>
+      Kode ini hanya untuk proses pairing perangkat.
+    </p>
+
+    <button onclick="generateCode()">
+      Buat Kode Baru
+    </button>
+
+  </div>
+
+  <script>
+
+    function generateCode() {
+
+      const code =
+        Math.floor(
+          100000 + Math.random() * 900000
+        ).toString();
+
+      document.getElementById("pairCode")
+        .textContent = code;
+    }
+
+    generateCode();
+
+  </script>
+
+</body>
+</html>

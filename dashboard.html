@@ -1,0 +1,262 @@
+﻿<!DOCTYPE html><html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VEIL — Dashboard</title>  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      color: white;
+
+      background:
+        linear-gradient(
+          rgba(0, 0, 0, 0.55),
+          rgba(0, 0, 0, 0.82)
+        ),
+        url("veil-bg.jpg");
+
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      margin: auto;
+      padding: 30px 20px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .logo {
+      font-size: 32px;
+      font-weight: bold;
+      letter-spacing: 8px;
+    }
+
+    .status {
+      color: #55ff88;
+      font-size: 13px;
+    }
+
+    .welcome {
+      margin-bottom: 25px;
+    }
+
+    .welcome h2 {
+      font-size: 25px;
+      margin-bottom: 8px;
+    }
+
+    .welcome p {
+      color: #aaa;
+    }
+
+    .card {
+      background: rgba(12, 12, 16, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+      padding: 25px;
+
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+
+      box-shadow:
+        0 15px 50px rgba(0, 0, 0, 0.65);
+    }
+
+    .card-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .card-title h3 {
+      font-size: 20px;
+    }
+
+    .add-button {
+      background: #a80000;
+      color: white;
+      border: none;
+      padding: 11px 16px;
+      border-radius: 9px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .add-button:hover {
+      background: #d00000;
+    }
+
+    .device {
+      border: 1px solid #292929;
+      border-radius: 14px;
+      padding: 18px;
+      background: rgba(0, 0, 0, 0.35);
+      margin-bottom: 15px;
+    }
+
+    .device-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .device-name {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .online {
+      color: #55ff88;
+      font-size: 13px;
+    }
+
+    .offline {
+      color: #ff5555;
+      font-size: 13px;
+    }
+
+    .device-info {
+      color: #999;
+      font-size: 13px;
+      line-height: 1.8;
+      margin-bottom: 15px;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .action {
+      padding: 12px;
+      border-radius: 9px;
+      border: 1px solid #333;
+      background: #17171d;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .action:hover {
+      background: #25252d;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: #777;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        align-items: flex-start;
+      }
+
+      .buttons {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style></head><body>  <div class="container"><header>
+  <div class="logo">VEIL</div>
+  <div class="status">● SYSTEM ONLINE</div>
+</header>
+
+<section class="welcome">
+  <h2>Dashboard</h2>
+  <p>Lost Phone Protection System</p>
+</section>
+
+<section class="card">
+
+  <div class="card-title">
+    <h3>Perangkat Saya</h3>
+
+    <button class="add-button" onclick="addDevice()">
+      + Tambah HP
+    </button>
+  </div>
+
+  <div class="device">
+
+    <div class="device-top">
+
+      <div class="device-name">
+        📱 Belum Ada Perangkat
+      </div>
+
+      <div class="offline">
+        ● Belum Terhubung
+      </div>
+
+    </div>
+
+    <div class="device-info">
+      Daftarkan aplikasi VEIL pada HP terlebih dahulu.
+      <br>
+      Status: Menunggu perangkat
+    </div>
+
+    <div class="buttons">
+
+      <button class="action" onclick="locationFeature()">
+        📍 Lokasi
+      </button>
+
+      <button class="action" onclick="lostModeFeature()">
+        🔒 Lost Mode
+      </button>
+
+      <button class="action" onclick="textFeature()">
+        🔊 Pesan
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+  </div>  <script>
+
+    function addDevice() {
+      window.location.href = "pair.html";
+    }
+
+    function locationFeature() {
+      alert(
+        "Fitur lokasi akan aktif setelah perangkat VEIL terhubung."
+      );
+    }
+
+    function lostModeFeature() {
+      alert(
+        "Lost Mode akan aktif setelah perangkat VEIL terhubung."
+      );
+    }
+
+    function textFeature() {
+      alert(
+        "Fitur pesan akan aktif setelah perangkat VEIL terhubung."
+      );
+    }
+
+  </script></body>
+</html>

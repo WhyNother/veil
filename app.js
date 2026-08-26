@@ -7,7 +7,7 @@ const verifyOtpButton = document.getElementById("verifyOtp");
 const otpSection = document.getElementById("otpSection");
 const message = document.getElementById("message");
 
-const SERVER_URL = "https://survivor-asus-excitement-openings.trycloudflare.com";
+const SERVER_URL = "https://veil-production-5302.up.railway.app";
 
 
 // ==============================
@@ -115,22 +115,28 @@ verifyOtpButton.addEventListener("click", async () => {
       }
     );
 
-    const result = await response.json();
+const result = await response.json();
 
-    if (!response.ok || !result.success) {
+console.log("VERIFY RESULT:", result);
+alert("VERIFY RESULT: " + JSON.stringify(result));
 
-      message.textContent =
-        result.message || "OTP salah.";
-
-      return;
-    }
-
+if (!response.ok || !result.success) {
     message.textContent =
-      "✅ Email berhasil diverifikasi.";
+        result.message || "OTP salah.";
+    return;
+}
 
-    setTimeout(() => {
-      window.location.href = "dashboard.html";
-    },  1000);
+message.textContent =
+    "✓ Email berhasil diverifikasi.";
+
+localStorage.setItem(
+    "veil_verified_email",
+    email
+);
+
+setTimeout(() => {
+    window.location.href = "dashboard.html";
+}, 1000);
 
   } catch (error) {
 

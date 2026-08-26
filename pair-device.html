@@ -478,6 +478,25 @@
 
                 return;
             }
+            
+// Minta izin lokasi setelah pairing berhasil
+navigator.geolocation.getCurrentPosition(
+    function(position) {
+        console.log(
+            "Lokasi berhasil:",
+            position.coords.latitude,
+            position.coords.longitude
+        );
+    },
+    function(error) {
+        console.log("Izin lokasi ditolak/gagal:", error);
+    },
+    {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0
+    }
+);
 
 
 // ==================================

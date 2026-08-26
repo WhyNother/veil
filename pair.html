@@ -1,140 +1,855 @@
 ﻿<!DOCTYPE html>
 <html lang="id">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>VEIL — Tambah HP</title>
+    <meta charset="UTF-8">
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    <title>VEIL — Tambah HP</title>
 
-      font-family: Arial, sans-serif;
-      color: white;
 
-      background:
-        linear-gradient(
-          rgba(0,0,0,.65),
-          rgba(0,0,0,.85)
-        ),
-        url("veil-bg.jpg");
+    <style>
 
-      background-size: cover;
-      background-position: center;
-    }
+        * {
+            box-sizing: border-box;
+        }
 
-    .box {
-      width: 90%;
-      max-width: 500px;
 
-      padding: 30px;
+        body {
 
-      background: rgba(15,15,20,.88);
-      border: 1px solid rgba(255,255,255,.15);
-      border-radius: 20px;
+            margin: 0;
 
-      text-align: center;
+            min-height: 100vh;
 
-      box-shadow: 0 20px 60px rgba(0,0,0,.6);
-    }
+            display: flex;
 
-    h1 {
-      letter-spacing: 8px;
-      margin-bottom: 10px;
-    }
+            align-items: center;
 
-    p {
-      color: #aaa;
-      line-height: 1.6;
-    }
+            justify-content: center;
 
-    .code {
-      margin: 30px 0;
-      padding: 20px;
+            font-family: Arial, sans-serif;
 
-      border-radius: 14px;
-      background: #09090c;
-      border: 1px solid #333;
+            color: white;
 
-      font-size: 34px;
-      font-weight: bold;
-      letter-spacing: 8px;
-    }
+            background:
+                linear-gradient(
+                    rgba(0,0,0,.65),
+                    rgba(0,0,0,.88)
+                ),
+                url("veil-bg.jpg");
 
-    button {
-      width: 100%;
-      padding: 14px;
+            background-size: cover;
 
-      border: none;
-      border-radius: 10px;
+            background-position: center;
 
-      background: #d00000;
-      color: white;
+        }
 
-      font-size: 16px;
-      font-weight: bold;
 
-      cursor: pointer;
-    }
+        .box {
 
-    button:hover {
-      background: #ef0000;
-    }
-  </style>
+            width: 90%;
+
+            max-width: 500px;
+
+            padding: 30px;
+
+            background:
+                rgba(15,15,20,.90);
+
+            border:
+                1px solid
+                rgba(255,255,255,.15);
+
+            border-radius: 20px;
+
+            text-align: center;
+
+            box-shadow:
+                0 20px 60px
+                rgba(0,0,0,.6);
+
+        }
+
+
+        h1 {
+
+            letter-spacing: 8px;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        h2 {
+
+            margin-top: 10px;
+
+        }
+
+
+        p {
+
+            color: #aaa;
+
+            line-height: 1.6;
+
+        }
+
+
+        .code {
+
+            margin: 30px 0;
+
+            padding: 20px;
+
+            border-radius: 14px;
+
+            background: #09090c;
+
+            border:
+                1px solid #333;
+
+            font-size: 34px;
+
+            font-weight: bold;
+
+            letter-spacing: 8px;
+
+            min-height: 76px;
+
+        }
+
+
+        button {
+
+            width: 100%;
+
+            padding: 14px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #d00000;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        button:hover {
+
+            background: #ef0000;
+
+        }
+
+
+        button:disabled {
+
+            opacity: .6;
+
+            cursor: not-allowed;
+
+        }
+
+
+        #message {
+
+            margin-top: 18px;
+
+            padding: 12px;
+
+            border-radius: 10px;
+
+            display: none;
+
+            line-height: 1.5;
+
+        }
+
+
+        #message.success {
+
+            display: block;
+
+            color: #54ffac;
+
+            background:
+                rgba(0,180,100,.12);
+
+            border:
+                1px solid
+                rgba(0,220,130,.4);
+
+        }
+
+
+        #message.error {
+
+            display: block;
+
+            color: #ff7777;
+
+            background:
+                rgba(255,60,60,.12);
+
+            border:
+                1px solid
+                rgba(255,80,80,.4);
+
+        }
+
+
+        .loading {
+
+            color: #80bfff;
+
+        }
+
+    </style>
+
 </head>
+
 
 <body>
 
-  <div class="box">
+
+<div class="box" id="mainBox">
 
     <h1>VEIL</h1>
 
     <h2>Tambah HP</h2>
 
+
     <p>
-      Buka aplikasi VEIL pada HP milik kamu,
-      lalu masukkan kode pairing berikut.
+
+        Buka aplikasi VEIL pada HP milik kamu,
+
+        lalu masukkan kode pairing berikut.
+
     </p>
 
-    <div class="code" id="pairCode">
-      ------ 
+
+    <div
+        class="code"
+        id="pairCode"
+    >
+        ------
     </div>
 
-    <p>
-      Kode ini hanya untuk proses pairing perangkat.
+
+    <p id="codeInfo">
+
+        Membuat kode pairing...
+
     </p>
 
-    <button onclick="generateCode()">
-      Buat Kode Baru
+
+    <div id="message"></div>
+
+
+    <button
+        id="newCodeButton"
+        onclick="generateCode()"
+    >
+
+        Buat Kode Baru
+
     </button>
 
-  </div>
+</div>
 
-  <script>
 
-    function generateCode() {
 
-      const code =
-        Math.floor(
-          100000 + Math.random() * 900000
-        ).toString();
+<script>
 
-      document.getElementById("pairCode")
-        .textContent = code;
+
+// =====================================================
+// KONFIGURASI SERVER
+// =====================================================
+
+// Pakai server yang SAMA dengan halaman pair.html.
+// Jadi kalau halaman dibuka dari:
+// http://192.168.1.9:3000/pair.html
+//
+// API otomatis menjadi:
+// http://192.168.1.9:3000/api/...
+
+const SERVER_URL =
+    window.location.origin;
+
+
+// =====================================================
+// ELEMENT
+// =====================================================
+
+const pairCode =
+    document.getElementById("pairCode");
+
+const codeInfo =
+    document.getElementById("codeInfo");
+
+const message =
+    document.getElementById("message");
+
+const newCodeButton =
+    document.getElementById("newCodeButton");
+
+const mainBox =
+    document.getElementById("mainBox");
+
+
+// =====================================================
+// VARIABLE
+// =====================================================
+
+let currentCode = null;
+
+let statusTimer = null;
+
+
+// =====================================================
+// PESAN
+// =====================================================
+
+function showMessage(
+    type,
+    text
+) {
+
+    message.className = type;
+
+    message.textContent = text;
+
+}
+
+
+// =====================================================
+// AMBIL EMAIL
+// =====================================================
+
+function getEmail() {
+
+    const email =
+        localStorage.getItem(
+            "veil_verified_email"
+        );
+
+    if (!email) {
+
+        return null;
+
     }
 
-    generateCode();
+    return email
+        .trim()
+        .toLowerCase();
 
-  </script>
+}
+
+
+// =====================================================
+// BUAT KODE PAIRING
+// =====================================================
+
+async function generateCode() {
+
+    try {
+
+        // Hentikan timer lama
+
+        if (statusTimer) {
+
+            clearInterval(statusTimer);
+
+            statusTimer = null;
+
+        }
+
+
+        const email =
+            getEmail();
+
+
+        // ==========================================
+        // CEK EMAIL
+        // ==========================================
+
+        if (!email) {
+
+            showMessage(
+                "error",
+                "Email VEIL belum ditemukan. Silakan kembali ke dashboard dan verifikasi email terlebih dahulu."
+            );
+
+            pairCode.textContent =
+                "------";
+
+            codeInfo.textContent =
+                "Email belum tersedia.";
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // RESET TAMPILAN
+        // ==========================================
+
+        showMessage(
+            "",
+            ""
+        );
+
+        message.style.display =
+            "none";
+
+
+        pairCode.textContent =
+            "......";
+
+        codeInfo.textContent =
+            "Menghubungkan ke server VEIL...";
+
+
+        newCodeButton.disabled =
+            true;
+
+        newCodeButton.textContent =
+            "MEMBUAT KODE...";
+
+
+        // ==========================================
+        // REQUEST SERVER
+        // ==========================================
+
+        console.log(
+            "VEIL SERVER:",
+            SERVER_URL
+        );
+
+        console.log(
+            "VEIL EMAIL:",
+            email
+        );
+
+
+        const response =
+            await fetch(
+                SERVER_URL +
+                "/api/create-pairing",
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            email: email
+
+                        })
+
+                }
+            );
+
+
+        // ==========================================
+        // BACA RESPONSE
+        // ==========================================
+
+        const result =
+            await response.json();
+
+
+        console.log(
+            "CREATE PAIRING:",
+            result
+        );
+
+
+        // ==========================================
+        // RESPONSE ERROR
+        // ==========================================
+
+        if (!response.ok) {
+
+            pairCode.textContent =
+                "ERROR";
+
+            codeInfo.textContent =
+                "Gagal membuat kode.";
+
+
+            showMessage(
+                "error",
+                result.message ||
+                "Server menolak permintaan pairing."
+            );
+
+            return;
+
+        }
+
+
+        if (!result.success) {
+
+            pairCode.textContent =
+                "ERROR";
+
+            codeInfo.textContent =
+                "Gagal membuat kode.";
+
+
+            showMessage(
+                "error",
+                result.message ||
+                "Gagal membuat kode pairing."
+            );
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // BERHASIL
+        // ==========================================
+
+        currentCode =
+            String(result.code);
+
+
+        pairCode.textContent =
+            currentCode;
+
+
+        codeInfo.textContent =
+            "Kode berlaku selama 5 menit. Masukkan kode ini pada HP yang ingin dihubungkan.";
+
+
+        showMessage(
+            "success",
+            "Kode pairing berhasil dibuat."
+        );
+
+
+        // ==========================================
+        // MULAI CEK STATUS
+        // ==========================================
+
+        startPairingCheck();
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "VEIL CREATE PAIRING ERROR:",
+            error
+        );
+
+
+        pairCode.textContent =
+            "ERROR";
+
+
+        codeInfo.textContent =
+            "Tidak dapat menghubungi server.";
+
+
+        showMessage(
+            "error",
+            "Server VEIL tidak dapat dihubungi. Pastikan node server.js masih berjalan."
+        );
+
+    }
+
+    finally {
+
+        newCodeButton.disabled =
+            false;
+
+        newCodeButton.textContent =
+            "BUAT KODE BARU";
+
+    }
+
+}
+
+
+
+// =====================================================
+// CEK STATUS PAIRING
+// =====================================================
+
+function startPairingCheck() {
+
+    if (!currentCode) {
+
+        return;
+
+    }
+
+
+    // Cek langsung
+
+    checkPairingStatus();
+
+
+    // Cek setiap 2 detik
+
+    statusTimer =
+        setInterval(
+            checkPairingStatus,
+            2000
+        );
+
+}
+
+
+
+// =====================================================
+// STATUS PAIRING
+// =====================================================
+
+async function checkPairingStatus() {
+
+    if (!currentCode) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+
+                SERVER_URL +
+                "/api/pair-status?code=" +
+                encodeURIComponent(
+                    currentCode
+                )
+
+            );
+
+
+        const result =
+            await response.json();
+
+
+        console.log(
+            "PAIR STATUS:",
+            result
+        );
+
+
+        // ==========================================
+        // BERHASIL
+        // ==========================================
+
+        if (
+
+            result.success === true &&
+
+            result.status === "paired"
+
+        ) {
+
+
+            if (statusTimer) {
+
+                clearInterval(
+                    statusTimer
+                );
+
+                statusTimer = null;
+
+            }
+
+
+            mainBox.innerHTML = `
+
+                <div style="
+                    font-size:60px;
+                    color:#54ffac;
+                    margin-bottom:15px;
+                ">
+                    ✓
+                </div>
+
+
+                <h1 style="
+                    letter-spacing:3px;
+                    color:#54ffac;
+                    font-size:28px;
+                ">
+
+                    PERANGKAT
+
+                    <br>
+
+                    BERHASIL TERHUBUNG
+
+                </h1>
+
+
+                <p>
+
+                    Perangkat berhasil
+                    terhubung ke akun VEIL.
+
+                </p>
+
+
+                <div style="
+                    margin:25px 0;
+                    padding:16px;
+                    border-radius:12px;
+                    background:#09090c;
+                    border:1px solid #333;
+                    color:#80bfff;
+                ">
+
+                    ${
+                        result.deviceName ||
+                        "Perangkat VEIL"
+                    }
+
+                </div>
+
+
+                <button
+                    onclick="
+                        location.href='dashboard.html'
+                    "
+                >
+
+                    SELESAI
+
+                </button>
+
+            `;
+
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // EXPIRED
+        // ==========================================
+
+        if (
+
+            result.success === true &&
+
+            result.status === "expired"
+
+        ) {
+
+
+            if (statusTimer) {
+
+                clearInterval(
+                    statusTimer
+                );
+
+                statusTimer = null;
+
+            }
+
+
+            pairCode.textContent =
+                "EXPIRED";
+
+
+            codeInfo.textContent =
+                "Kode pairing sudah kedaluwarsa. Buat kode baru.";
+
+
+            showMessage(
+                "error",
+                "Kode pairing sudah kedaluwarsa."
+            );
+
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // NOT FOUND
+        // ==========================================
+
+        if (
+
+            result.success === true &&
+
+            result.status === "not_found"
+
+        ) {
+
+            console.log(
+                "Kode belum ditemukan."
+            );
+
+            return;
+
+        }
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "PAIR STATUS ERROR:",
+            error
+        );
+
+        // Jangan langsung mengubah halaman.
+        // Request berikutnya akan mencoba lagi.
+
+    }
+
+}
+
+
+
+// =====================================================
+// JALANKAN OTOMATIS
+// =====================================================
+
+generateCode();
+
+
+</script>
+
 
 </body>
+
 </html>

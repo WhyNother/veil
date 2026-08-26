@@ -2,11 +2,16 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>VEIL - Hubungkan Perangkat</title>
 
     <style>
+
         * {
             box-sizing: border-box;
         }
@@ -14,11 +19,16 @@
         body {
             margin: 0;
             min-height: 100vh;
+
             font-family: Arial, sans-serif;
+
             color: white;
 
             background:
-                linear-gradient(rgba(3, 15, 40, 0.90), rgba(3, 15, 40, 0.95)),
+                linear-gradient(
+                    rgba(3, 15, 40, 0.90),
+                    rgba(3, 15, 40, 0.95)
+                ),
                 url("veil-bg.jpg");
 
             background-size: cover;
@@ -36,42 +46,60 @@
 
         .logo {
             text-align: center;
+
             font-size: 48px;
             font-weight: 800;
+
             letter-spacing: 8px;
+
             margin-bottom: 5px;
         }
 
         .subtitle {
             text-align: center;
+
             color: #4da3ff;
+
             font-size: 14px;
             letter-spacing: 2px;
+
             margin-bottom: 35px;
         }
 
         .card {
             padding: 30px 25px;
+
             border-radius: 20px;
 
-            background: rgba(5, 20, 50, 0.80);
-            border: 1px solid rgba(80, 170, 255, 0.35);
+            background:
+                rgba(5, 20, 50, 0.80);
+
+            border:
+                1px solid
+                rgba(80, 170, 255, 0.35);
 
             box-shadow:
-                0 0 30px rgba(0, 120, 255, 0.20);
+                0 0 30px
+                rgba(0, 120, 255, 0.20);
         }
 
         h2 {
             margin-top: 0;
+
             text-align: center;
+
             font-size: 25px;
         }
 
         .description {
             text-align: center;
+
             color: #b9c8dc;
+
             line-height: 1.5;
+
             font-size: 14px;
+
             margin-bottom: 25px;
         }
 
@@ -79,15 +107,22 @@
             width: 100%;
             height: 60px;
 
-            border: 1px solid rgba(100, 180, 255, 0.5);
+            border:
+                1px solid
+                rgba(100, 180, 255, 0.5);
+
             border-radius: 12px;
 
-            background: rgba(0, 0, 0, 0.25);
+            background:
+                rgba(0, 0, 0, 0.25);
+
             color: white;
 
             text-align: center;
+
             font-size: 28px;
             font-weight: bold;
+
             letter-spacing: 8px;
 
             outline: none;
@@ -95,7 +130,10 @@
 
         input:focus {
             border-color: #299cff;
-            box-shadow: 0 0 15px rgba(41, 156, 255, 0.3);
+
+            box-shadow:
+                0 0 15px
+                rgba(41, 156, 255, 0.3);
         }
 
         button {
@@ -107,9 +145,15 @@
             border: none;
             border-radius: 12px;
 
-            background: linear-gradient(90deg, #ff4d4d, #ff6868);
+            background:
+                linear-gradient(
+                    90deg,
+                    #ff4d4d,
+                    #ff6868
+                );
 
             color: white;
+
             font-size: 16px;
             font-weight: bold;
 
@@ -118,16 +162,19 @@
 
         button:disabled {
             opacity: 0.6;
+
             cursor: not-allowed;
         }
 
         #message {
             margin-top: 20px;
+
             padding: 12px;
 
             border-radius: 10px;
 
             text-align: center;
+
             font-size: 14px;
 
             display: none;
@@ -135,31 +182,48 @@
 
         #message.success {
             display: block;
-            background: rgba(0, 180, 100, 0.15);
-            border: 1px solid rgba(0, 220, 130, 0.5);
+
+            background:
+                rgba(0, 180, 100, 0.15);
+
+            border:
+                1px solid
+                rgba(0, 220, 130, 0.5);
+
             color: #54ffac;
         }
 
         #message.error {
             display: block;
-            background: rgba(255, 60, 60, 0.15);
-            border: 1px solid rgba(255, 80, 80, 0.5);
+
+            background:
+                rgba(255, 60, 60, 0.15);
+
+            border:
+                1px solid
+                rgba(255, 80, 80, 0.5);
+
             color: #ff7777;
         }
 
         .back {
             display: block;
+
             text-align: center;
+
             margin-top: 20px;
 
             color: #80bfff;
+
             text-decoration: none;
+
             font-size: 14px;
         }
 
         .back:hover {
             text-decoration: underline;
         }
+
     </style>
 </head>
 
@@ -167,7 +231,9 @@
 
 <div class="container">
 
-    <div class="logo">VEIL</div>
+    <div class="logo">
+        VEIL
+    </div>
 
     <div class="subtitle">
         Lost Phone Protection System
@@ -175,11 +241,14 @@
 
     <div class="card">
 
-        <h2>Hubungkan Perangkat</h2>
+        <h2>
+            Hubungkan Perangkat
+        </h2>
 
         <div class="description">
-            Masukkan kode pairing 6 digit yang
-            diberikan oleh pemilik akun VEIL.
+            Masukkan kode pairing 6 digit
+            yang diberikan oleh pemilik
+            akun VEIL.
         </div>
 
         <input
@@ -191,13 +260,19 @@
             autocomplete="off"
         >
 
-        <button id="pairButton" onclick="pairDevice()">
+        <button
+            id="pairButton"
+            onclick="pairDevice()"
+        >
             HUBUNGKAN
         </button>
 
         <div id="message"></div>
 
-        <a href="index.html" class="back">
+        <a
+            href="index.html"
+            class="back"
+        >
             ← Kembali
         </a>
 
@@ -209,38 +284,101 @@
 <script>
 
     // ==========================================
-    // ALAMAT SERVER VEIL
+    // SERVER VEIL
     // ==========================================
 
-    // Untuk TEST DI LAPTOP:
-    const SERVER_URL = "https://survivor-asus-excitement-openings.trycloudflare.com";
+    // Kosong = gunakan server yang sama
+    // dengan halaman pair-device.html
 
-    // NANTI kalau server sudah memakai Cloudflare Tunnel,
-    // ubah menjadi contoh:
-    //
-    // const SERVER_URL = "https://alamat-tunnel-kamu.trycloudflare.com";
+    const SERVER_URL = "";
 
 
     // ==========================================
-    // AMBIL ELEMENT
+    // ELEMENT
     // ==========================================
 
-    const codeInput = document.getElementById("code");
-    const pairButton = document.getElementById("pairButton");
-    const message = document.getElementById("message");
+    const codeInput =
+        document.getElementById("code");
+
+    const pairButton =
+        document.getElementById("pairButton");
+
+    const message =
+        document.getElementById("message");
 
 
     // ==========================================
-    // HANYA IZINKAN ANGKA
+    // IDENTITAS PERANGKAT
     // ==========================================
 
-    codeInput.addEventListener("input", function () {
+    let deviceId =
+        localStorage.getItem("veil_device_id");
 
-        this.value = this.value
-            .replace(/\D/g, "")
-            .slice(0, 6);
 
-    });
+    if (!deviceId) {
+
+        if (
+            window.crypto &&
+            typeof window.crypto.randomUUID === "function"
+        ) {
+
+            deviceId =
+                window.crypto.randomUUID();
+
+        } else {
+
+            deviceId =
+                "veil-" +
+                Date.now() +
+                "-" +
+                Math.random()
+                    .toString(36)
+                    .substring(2, 12);
+
+        }
+
+        localStorage.setItem(
+            "veil_device_id",
+            deviceId
+        );
+    }
+
+
+    // ==========================================
+    // NAMA PERANGKAT
+    // ==========================================
+
+    let deviceName =
+        localStorage.getItem("veil_device_name");
+
+
+    if (!deviceName) {
+
+        deviceName =
+            "Perangkat VEIL";
+
+        localStorage.setItem(
+            "veil_device_name",
+            deviceName
+        );
+    }
+
+
+    // ==========================================
+    // INPUT KODE
+    // ==========================================
+
+    codeInput.addEventListener(
+        "input",
+        function () {
+
+            this.value =
+                this.value
+                    .replace(/\D/g, "")
+                    .slice(0, 6);
+
+        }
+    );
 
 
     // ==========================================
@@ -249,18 +387,27 @@
 
     async function pairDevice() {
 
-        const code = codeInput.value.trim();
+        const code =
+            codeInput.value.trim();
+
+
+        // Reset pesan
 
         message.className = "";
+
         message.textContent = "";
+
         message.style.display = "none";
 
 
-        // Validasi kode
+        // ======================================
+        // VALIDASI KODE
+        // ======================================
 
         if (!/^\d{6}$/.test(code)) {
 
             message.className = "error";
+
             message.textContent =
                 "Kode pairing harus terdiri dari 6 angka.";
 
@@ -268,40 +415,62 @@
         }
 
 
-        // Disable tombol
+        // ======================================
+        // LOCK BUTTON
+        // ======================================
 
         pairButton.disabled = true;
-        pairButton.textContent = "MENGHUBUNGKAN...";
+
+        pairButton.textContent =
+            "MENGHUBUNGKAN...";
 
 
         try {
 
-            const response = await fetch(
-                `${SERVER_URL}/api/pair-device`,
-                {
-                    method: "POST",
+            // ==================================
+            // KIRIM KE SERVER
+            // ==================================
 
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+            const response =
+                await fetch(
+                    `${SERVER_URL}/api/pair-device`,
+                    {
+                        method: "POST",
 
-                    body: JSON.stringify({
-                        code: code
-                    })
-                }
-            );
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify({
+                                code: code,
+                                deviceId: deviceId,
+                                deviceName: deviceName
+                            })
+                    }
+                );
 
 
-            const result = await response.json();
+            // ==================================
+            // BACA RESPONSE
+            // ==================================
+
+            const result =
+                await response.json();
 
 
             // ==================================
             // GAGAL
             // ==================================
 
-            if (!response.ok || !result.success) {
+            if (
+                !response.ok ||
+                !result.success
+            ) {
 
-                message.className = "error";
+                message.className =
+                    "error";
 
                 message.textContent =
                     result.message ||
@@ -311,32 +480,101 @@
             }
 
 
-            // ==================================
-            // BERHASIL
-            // ==================================
+// ==================================
+// BERHASIL
+// ==================================
 
-            message.className = "success";
+console.log(
+    "VEIL pairing berhasil:",
+    result
+);
 
-            message.textContent =
-                "✓ Perangkat berhasil terhubung.";
+document.querySelector(".card").innerHTML = `
+    <div style="
+        text-align:center;
+        padding:20px 5px;
+    ">
 
+        <div style="
+            width:80px;
+            height:80px;
+            margin:0 auto 20px;
+            border-radius:50%;
+            background:rgba(0,220,130,0.15);
+            border:2px solid #54ffac;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:42px;
+            color:#54ffac;
+        ">
+            ✓
+        </div>
 
-            codeInput.value = "";
+        <h2 style="color:#54ffac;margin-bottom:15px;">
+            Perangkat Berhasil Terhubung
+        </h2>
 
+        <div style="
+            color:#b9c8dc;
+            line-height:1.6;
+            font-size:14px;
+        ">
+            Perangkat ini sudah berhasil
+            terhubung ke akun VEIL.
+        </div>
 
-        } catch (error) {
+        <div style="
+            margin-top:20px;
+            padding:12px;
+            border-radius:10px;
+            background:rgba(0,0,0,0.20);
+            color:#80bfff;
+            font-size:13px;
+        ">
+            ${deviceName}
+        </div>
 
-            console.error(error);
+        <a href="index.html" style="
+            display:block;
+            margin-top:22px;
+            padding:15px;
+            border-radius:12px;
+            background:linear-gradient(90deg,#168cff,#299cff);
+            color:white;
+            text-decoration:none;
+            font-weight:bold;
+        ">
+            SELESAI
+        </a>
 
-            message.className = "error";
+    </div>
+`;
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "VEIL pairing error:",
+                error
+            );
+
+            message.className =
+                "error";
 
             message.textContent =
                 "Server VEIL tidak dapat dihubungi.";
 
-        } finally {
+        }
 
-            pairButton.disabled = false;
-            pairButton.textContent = "HUBUNGKAN";
+        finally {
+
+            pairButton.disabled =
+                false;
+
+            pairButton.textContent =
+                "HUBUNGKAN";
 
         }
 

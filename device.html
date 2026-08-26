@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEIL Device</title>
+</head>
+
+<body>
+
+    <h1>VEIL DEVICE</h1>
+
+    <p id="status">
+        Halaman perangkat berhasil dibuka.
+    </p>
+
+    <button onclick="testLocation()">
+        TEST LOKASI
+    </button>
+
+    <script>
+
+        function testLocation() {
+
+            const status =
+                document.getElementById("status");
+
+            if (!navigator.geolocation) {
+
+                status.textContent =
+                    "Browser tidak mendukung GPS.";
+
+                return;
+            }
+
+            status.textContent =
+                "Meminta izin lokasi...";
+
+            navigator.geolocation.getCurrentPosition(
+
+                function(position) {
+
+                    status.textContent =
+                        "GPS berhasil dibaca: " +
+                        position.coords.latitude +
+                        ", " +
+                        position.coords.longitude;
+
+                },
+
+                function(error) {
+
+                    status.textContent =
+                        "GPS gagal: " +
+                        error.message;
+
+                    console.error(error);
+
+                },
+
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+    </script>
+
+</body>
+
+</html>

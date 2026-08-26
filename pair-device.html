@@ -478,19 +478,90 @@
 
                 return;
             }
-            
-// Minta izin lokasi setelah pairing berhasil
+
+// ==================================
+// AMBIL & KIRIM LOKASI PERTAMA
+// ==================================
+
 navigator.geolocation.getCurrentPosition(
-    function(position) {
+
+    async function(position) {
+
+        const latitude =
+            position.coords.latitude;
+
+        const longitude =
+            position.coords.longitude;
+
+        const accuracy =
+            position.coords.accuracy;
+
         console.log(
-            "Lokasi berhasil:",
-            position.coords.latitude,
-            position.coords.longitude
+            "VEIL GPS:",
+            latitude,
+            longitude,
+            accuracy
         );
+
+        try {
+
+            const locationResponse =
+                await fetch(
+                    `${SERVER_URL}/api/update-location`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            email:
+                                result.email,
+
+                            deviceId:
+                                deviceId,
+
+                            latitude:
+                                latitude,
+
+                            longitude:
+                                longitude,
+
+                            accuracy:
+                                accuracy
+                        })
+                    }
+                );
+
+            const locationResult =
+                await locationResponse.json();
+
+            console.log(
+                "VEIL LOCATION UPDATE:",
+                locationResult
+            );
+
+        } catch (locationError) {
+
+            console.error(
+                "VEIL LOCATION UPDATE ERROR:",
+                locationError
+            );
+
+        }
     },
+
     function(error) {
-        console.log("Izin lokasi ditolak/gagal:", error);
+
+        console.error(
+            "VEIL GPS ERROR:",
+            error
+        );
+
     },
+
     {
         enableHighAccuracy: true,
         timeout: 15000,

@@ -12,6 +12,15 @@
 
     <title>VEIL — Dashboard</title>
 
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    ></script>
+
 
     <style>
 
@@ -20,7 +29,6 @@
             margin: 0;
             padding: 0;
         }
-
 
         body {
 
@@ -45,7 +53,6 @@
 
         }
 
-
         .container {
 
             width: 100%;
@@ -58,19 +65,17 @@
 
         }
 
-
         header {
 
             display: flex;
 
             justify-content: space-between;
 
-            align-items: center;
+            align-items: flex-start;
 
             margin-bottom: 30px;
 
         }
-
 
         .logo {
 
@@ -82,6 +87,17 @@
 
         }
 
+        .account-email {
+
+            margin-top: 8px;
+
+            color: #80bfff;
+
+            font-size: 13px;
+
+            word-break: break-all;
+
+        }
 
         .status {
 
@@ -91,13 +107,11 @@
 
         }
 
-
         .welcome {
 
             margin-bottom: 25px;
 
         }
-
 
         .welcome h2 {
 
@@ -107,13 +121,11 @@
 
         }
 
-
         .welcome p {
 
             color: #aaa;
 
         }
-
 
         .card {
 
@@ -138,7 +150,6 @@
 
         }
 
-
         .card-title {
 
             display: flex;
@@ -149,15 +160,15 @@
 
             margin-bottom: 20px;
 
-        }
+            gap: 15px;
 
+        }
 
         .card-title h3 {
 
             font-size: 20px;
 
         }
-
 
         .add-button {
 
@@ -175,15 +186,15 @@
 
             cursor: pointer;
 
-        }
+            white-space: nowrap;
 
+        }
 
         .add-button:hover {
 
             background: #d00000;
 
         }
-
 
         .device {
 
@@ -201,6 +212,11 @@
 
         }
 
+        .device:last-child {
+
+            margin-bottom: 0;
+
+        }
 
         .device-top {
 
@@ -208,12 +224,13 @@
 
             justify-content: space-between;
 
-            align-items: center;
+            align-items: flex-start;
+
+            gap: 15px;
 
             margin-bottom: 15px;
 
         }
-
 
         .device-name {
 
@@ -223,6 +240,17 @@
 
         }
 
+        .device-id {
+
+            color: #666;
+
+            font-size: 11px;
+
+            margin-top: 5px;
+
+            word-break: break-all;
+
+        }
 
         .online {
 
@@ -230,8 +258,9 @@
 
             font-size: 13px;
 
-        }
+            white-space: nowrap;
 
+        }
 
         .offline {
 
@@ -239,8 +268,9 @@
 
             font-size: 13px;
 
-        }
+            white-space: nowrap;
 
+        }
 
         .device-info {
 
@@ -254,6 +284,15 @@
 
         }
 
+        .device-location {
+
+            color: #80bfff;
+
+            font-size: 12px;
+
+            margin-top: 7px;
+
+        }
 
         .buttons {
 
@@ -265,7 +304,6 @@
             gap: 10px;
 
         }
-
 
         .action {
 
@@ -286,13 +324,11 @@
 
         }
 
-
         .action:hover {
 
             background: #25252d;
 
         }
-
 
         .action.connected {
 
@@ -301,7 +337,6 @@
             background: #14231b;
 
         }
-
 
         .empty {
 
@@ -313,6 +348,35 @@
 
         }
 
+        #map {
+
+            width: 100%;
+
+            height: 400px;
+
+            margin-top: 20px;
+
+            border-radius: 14px;
+
+            overflow: hidden;
+
+            display: none;
+
+        }
+
+        .map-title {
+
+            margin-top: 25px;
+
+            margin-bottom: 10px;
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+            display: none;
+
+        }
 
         @media (max-width: 600px) {
 
@@ -322,6 +386,19 @@
 
             }
 
+            .card-title {
+
+                align-items: stretch;
+
+                flex-direction: column;
+
+            }
+
+            .add-button {
+
+                width: 100%;
+
+            }
 
             .buttons {
 
@@ -329,27 +406,21 @@
 
             }
 
+            .device-top {
+
+                flex-direction: column;
+
+            }
+
+            #map {
+
+                height: 320px;
+
+            }
+
         }
 
-        #map {
-    width: 100%;
-    height: 400px;
-    margin-bottom: 20px;
-    border-radius: 18px;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.12);
-}
-
     </style>
-
-    <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
-
-    <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-    </script>
 
 </head>
 
@@ -360,13 +431,27 @@
 <div class="container">
 
 
-    <!-- HEADER -->
+    <!-- =================================================
+         HEADER
+         ================================================= -->
 
     <header>
 
-        <div class="logo">
-            VEIL
+        <div>
+
+            <div class="logo">
+                VEIL
+            </div>
+
+            <div
+                class="account-email"
+                id="accountEmail"
+            >
+                ✉️ Memuat akun...
+            </div>
+
         </div>
+
 
         <div class="status">
             ● SYSTEM ONLINE
@@ -375,7 +460,9 @@
     </header>
 
 
-    <!-- WELCOME -->
+    <!-- =================================================
+         WELCOME
+         ================================================= -->
 
     <section class="welcome">
 
@@ -390,11 +477,9 @@
     </section>
 
 
-    <!-- DEVICE CARD -->
-    
-    <!-- MAP LOKASI -->
-    
-    <div id="map"></div>
+    <!-- =================================================
+         PERANGKAT
+         ================================================= -->
 
     <section class="card">
 
@@ -406,6 +491,10 @@
             </h3>
 
 
+            <!--
+                pair.html = HALAMAN PEMBUAT KODE
+            -->
+
             <button
                 class="add-button"
                 onclick="addDevice()"
@@ -416,80 +505,35 @@
         </div>
 
 
-        <div class="device">
+        <!--
+            Semua perangkat akan dibuat
+            secara otomatis oleh JavaScript.
+        -->
 
+        <div id="devicesContainer">
 
-            <div class="device-top">
+            <div class="empty">
 
-
-                <div
-                    class="device-name"
-                    id="deviceName"
-                >
-                    📱 Perangkat VEIL
-                </div>
-
-
-                <div
-                    class="offline"
-                    id="deviceStatus"
-                >
-                    🔴 Belum Terhubung
-                </div>
-
+                Memuat perangkat...
 
             </div>
-
-
-            <div
-                class="device-info"
-                id="deviceInfo"
-            >
-
-                Daftarkan aplikasi VEIL
-                pada HP terlebih dahulu.
-
-                <br>
-
-                Status: Menunggu perangkat
-
-            </div>
-
-
-            <div class="buttons">
-
-
-                <button
-                    class="action"
-                    id="locationButton"
-                    onclick="locationFeature()"
-                >
-                    📍 Lokasi
-                </button>
-
-
-                <button
-                    class="action"
-                    id="lostModeButton"
-                    onclick="lostModeFeature()"
-                >
-                    🔒 Lost Mode
-                </button>
-
-
-                <button
-                    class="action"
-                    id="messageButton"
-                    onclick="textFeature()"
-                >
-                    🔊 Pesan
-                </button>
-
-
-            </div>
-
 
         </div>
+
+
+        <!-- =================================================
+             MAP
+             ================================================= -->
+
+        <div
+            class="map-title"
+            id="mapTitle"
+        >
+            📍 Lokasi Perangkat
+        </div>
+
+
+        <div id="map"></div>
 
 
     </section>
@@ -498,21 +542,22 @@
 </div>
 
 
-
 <script>
 
 
 // =====================================================
-// STATUS PERANGKAT
+// DATA GLOBAL
 // =====================================================
 
 let deviceConnected = false;
 
 let connectedDevice = null;
 
-let map = null;
-let locationMarker = null;
+let connectedDevices = [];
 
+let map = null;
+
+let locationMarker = null;
 
 
 // =====================================================
@@ -521,37 +566,120 @@ let locationMarker = null;
 
 function addDevice() {
 
+    // pair.html = halaman untuk membuat kode pairing
+
     window.location.href =
         "pair.html";
 
 }
 
 
+// =====================================================
+// TAMPILKAN EMAIL
+// =====================================================
+
+function showAccountEmail() {
+
+    const email =
+        localStorage.getItem(
+            "veil_verified_email"
+        ) ||
+        localStorage.getItem(
+            "veil_email"
+        );
+
+
+    const element =
+        document.getElementById(
+            "accountEmail"
+        );
+
+
+    if (!element) {
+        return;
+    }
+
+
+    if (email) {
+
+        element.innerHTML =
+            "✉️ " +
+            escapeHtml(email);
+
+    } else {
+
+        element.innerHTML =
+            "✉️ Email VEIL tidak ditemukan.";
+
+    }
+
+}
+
 
 // =====================================================
-// CEK STATUS PERANGKAT
+// ESCAPE HTML
+// =====================================================
+
+function escapeHtml(value) {
+
+    return String(
+        value ?? ""
+    )
+
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+
+    .replace(
+        /</g,
+        "&lt;"
+    )
+
+    .replace(
+        />/g,
+        "&gt;"
+    )
+
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+// =====================================================
+// CEK STATUS DEVICE
 // =====================================================
 
 async function checkDeviceStatus() {
 
     try {
 
-
         const email =
             localStorage.getItem(
                 "veil_verified_email"
+            ) ||
+            localStorage.getItem(
+                "veil_email"
             );
 
 
         if (!email) {
 
-            console.log(
-                "VEIL: email belum ditemukan."
-            );
-
             deviceConnected = false;
 
-            updateDeviceUI();
+            connectedDevice = null;
+
+            connectedDevices = [];
+
+            renderDevices();
 
             return;
 
@@ -566,13 +694,18 @@ async function checkDeviceStatus() {
                     method: "POST",
 
                     headers: {
+
                         "Content-Type":
                             "application/json"
+
                     },
 
                     body:
                         JSON.stringify({
-                            email: email
+
+                            email:
+                                email
+
                         })
 
                 }
@@ -590,48 +723,48 @@ async function checkDeviceStatus() {
 
 
         if (
+
             result.success === true &&
-            result.connectedDevices > 0
+
+            Array.isArray(
+                result.devices
+            )
+
         ) {
 
+            connectedDevices =
+                result.devices;
 
-            deviceConnected = true;
+
+            deviceConnected =
+                connectedDevices.length > 0;
 
 
-            if (
-                result.devices &&
-                result.devices.length > 0
-            ) {
+            connectedDevice =
+                connectedDevices.length > 0
 
-                connectedDevice =
-                    result.devices[0];
-                console.log("VEIL CONNECTED DEVICE:", connectedDevice);    
+                    ? connectedDevices[0]
 
-            } else {
-
-                connectedDevice = null;
-
-            }
-
+                    : null;
 
         } else {
-
 
             deviceConnected = false;
 
             connectedDevice = null;
 
+            connectedDevices = [];
+
         }
 
 
-        updateDeviceUI();
+        renderDevices();
 
 
     } catch (error) {
 
-
         console.error(
-            "VEIL status error:",
+            "VEIL STATUS ERROR:",
             error
         );
 
@@ -640,263 +773,584 @@ async function checkDeviceStatus() {
 
         connectedDevice = null;
 
-        updateDeviceUI();
+        connectedDevices = [];
 
-
-    }
-
-}
-
-
-
-// =====================================================
-// UPDATE TAMPILAN
-// =====================================================
-
-function updateDeviceUI() {
-
-
-    const deviceName =
-        document.getElementById(
-            "deviceName"
-        );
-
-
-    const deviceStatus =
-        document.getElementById(
-            "deviceStatus"
-        );
-
-
-    const deviceInfo =
-        document.getElementById(
-            "deviceInfo"
-        );
-
-
-    const locationButton =
-        document.getElementById(
-            "locationButton"
-        );
-
-
-    const lostModeButton =
-        document.getElementById(
-            "lostModeButton"
-        );
-
-
-    const messageButton =
-        document.getElementById(
-            "messageButton"
-        );
-
-
-
-    // ================================================
-    // TERHUBUNG
-    // ================================================
-
-    if (deviceConnected) {
-
-
-        const name =
-            connectedDevice &&
-            connectedDevice.deviceName
-                ? connectedDevice.deviceName
-                : "Perangkat VEIL";
-
-
-        deviceName.innerHTML =
-            "📱 " + name;
-
-
-        deviceStatus.className =
-            "online";
-
-
-        deviceStatus.innerHTML =
-            "🟢 Terhubung";
-
-
-        deviceInfo.innerHTML =
-            "Perangkat VEIL berhasil terhubung."
-            +
-            "<br>"
-            +
-            "Status: Perangkat aktif";
-
-
-        locationButton.classList.add(
-            "connected"
-        );
-
-
-        lostModeButton.classList.add(
-            "connected"
-        );
-
-
-        messageButton.classList.add(
-            "connected"
-        );
-
-
-    }
-
-
-    // ================================================
-    // BELUM TERHUBUNG
-    // ================================================
-
-    else {
-
-
-        deviceName.innerHTML =
-            "📱 Perangkat VEIL";
-
-
-        deviceStatus.className =
-            "offline";
-
-
-        deviceStatus.innerHTML =
-            "🔴 Belum Terhubung";
-
-
-        deviceInfo.innerHTML =
-            "Daftarkan aplikasi VEIL"
-            +
-            " pada HP terlebih dahulu."
-            +
-            "<br>"
-            +
-            "Status: Menunggu perangkat";
-
-
-        locationButton.classList.remove(
-            "connected"
-        );
-
-
-        lostModeButton.classList.remove(
-            "connected"
-        );
-
-
-        messageButton.classList.remove(
-            "connected"
-        );
+        renderDevices();
 
     }
 
 }
 
 
+// =====================================================
+// TAMPILKAN SEMUA DEVICE
+// =====================================================
+
+function renderDevices() {
+
+    const container =
+        document.getElementById(
+            "devicesContainer"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    if (
+        connectedDevices.length === 0
+    ) {
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                Belum ada perangkat
+                yang terhubung.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+
+        connectedDevices
+            .map(
+
+                function(device) {
+
+
+                    const name =
+                        escapeHtml(
+
+                            device.deviceName ||
+
+                            "Perangkat VEIL"
+
+                        );
+
+
+                    const rawDeviceId =
+                        device.deviceId || "";
+
+
+                    const encodedDeviceId =
+                        encodeURIComponent(
+                            rawDeviceId
+                        );
+
+
+                    const status =
+                        device.status ===
+                        "connected"
+
+                            ? "🟢 Terhubung"
+
+                            : "🔴 Offline";
+
+
+                    const statusClass =
+                        device.status ===
+                        "connected"
+
+                            ? "online"
+
+                            : "offline";
+
+
+                    let locationText =
+                        "📍 Lokasi belum tersedia";
+
+
+                    if (
+                        device.location
+                    ) {
+
+                        locationText =
+
+                            "📍 Lokasi terakhir: " +
+
+                            Number(
+                                device.location.latitude
+                            ).toFixed(6) +
+
+                            ", " +
+
+                            Number(
+                                device.location.longitude
+                            ).toFixed(6);
+
+                    }
+
+
+                    return `
+
+                        <div class="device">
+
+
+                            <div class="device-top">
+
+
+                                <div>
+
+
+                                    <div
+                                        class="device-name"
+                                    >
+
+                                        📱 ${name}
+
+                                    </div>
+
+
+                                    <div
+                                        class="device-id"
+                                    >
+
+                                        ID:
+                                        ${escapeHtml(
+                                            rawDeviceId
+                                        )}
+
+                                    </div>
+
+
+                                </div>
+
+
+                                <div
+                                    class="${statusClass}"
+                                >
+
+                                    ${status}
+
+                                </div>
+
+
+                            </div>
+
+
+                            <div
+                                class="device-info"
+                            >
+
+                                Perangkat VEIL
+                                berhasil terhubung.
+
+                                <br>
+
+                                Status:
+                                ${escapeHtml(
+                                    device.status ||
+                                    "unknown"
+                                )}
+
+
+                                <div
+                                    class="device-location"
+                                >
+
+                                    ${locationText}
+
+                                </div>
+
+                            </div>
+
+
+                            <div
+                                class="buttons"
+                            >
+
+
+                                <button
+                                    class="action connected"
+                                    onclick="locationFeature('${encodedDeviceId}')"
+                                >
+
+                                    📍 Lokasi
+
+                                </button>
+
+
+                                <button
+                                    class="action connected"
+                                    onclick="lostModeFeature('${encodedDeviceId}')"
+                                >
+
+                                    🔒 Lost Mode
+
+                                </button>
+
+
+                                <button
+                                    class="action connected"
+                                    onclick="textFeature('${encodedDeviceId}')"
+                                >
+
+                                    🔊 Pesan
+
+                                </button>
+
+
+                            </div>
+
+
+                        </div>
+
+                    `;
+
+                }
+
+            )
+
+            .join("");
+
+}
+
 
 // =====================================================
-// FITUR LOKASI
+// CARI DEVICE BERDASARKAN ID
 // =====================================================
 
-function showLocationOnMap(latitude, longitude, accuracy) {
+function getDeviceById(
+    deviceId
+) {
+
+    return connectedDevices.find(
+
+        function(device) {
+
+            return (
+                device.deviceId ===
+                deviceId
+            );
+
+        }
+
+    );
+
+}
+
+
+// =====================================================
+// TAMPILKAN LOKASI DI MAP
+// =====================================================
+
+function showLocationOnMap(
+
+    latitude,
+
+    longitude,
+
+    accuracy,
+
+    deviceName
+
+) {
+
+
+    const mapElement =
+        document.getElementById(
+            "map"
+        );
+
+
+    const mapTitle =
+        document.getElementById(
+            "mapTitle"
+        );
+
+
+    if (!mapElement) {
+
+        alert(
+            "Map tidak ditemukan."
+        );
+
+        return;
+
+    }
+
+
+    mapElement.style.display =
+        "block";
+
+
+    if (mapTitle) {
+
+        mapTitle.style.display =
+            "block";
+
+    }
+
+
+    // =================================================
+    // BUAT MAP PERTAMA KALI
+    // =================================================
 
     if (!map) {
 
-        map = L.map("map").setView(
-            [latitude, longitude],
-            16
-        );
+        map =
+            L.map(
+                "map"
+            ).setView(
+
+                [
+                    latitude,
+                    longitude
+                ],
+
+                16
+
+            );
+
 
         L.tileLayer(
+
             "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+
             {
+
                 maxZoom: 19,
-                attribution: "&copy; OpenStreetMap"
+
+                attribution:
+                    "&copy; OpenStreetMap"
+
             }
-        ).addTo(map);
+
+        ).addTo(
+            map
+        );
+
 
     } else {
 
         map.setView(
-            [latitude, longitude],
+
+            [
+                latitude,
+                longitude
+            ],
+
             16
+
         );
 
     }
 
 
+    // =================================================
+    // MARKER
+    // =================================================
+
     if (locationMarker) {
 
-        locationMarker.setLatLng([
-            latitude,
-            longitude
-        ]);
+        locationMarker.setLatLng(
+
+            [
+                latitude,
+                longitude
+            ]
+
+        );
 
     } else {
 
         locationMarker =
-            L.marker([
-                latitude,
-                longitude
-            ]).addTo(map);
+            L.marker(
+
+                [
+                    latitude,
+                    longitude
+                ]
+
+            ).addTo(
+                map
+            );
 
     }
 
 
-    locationMarker.bindPopup(
-        "📍 Perangkat VEIL<br>" +
-        "Akurasi: ±" +
-        Number(accuracy).toFixed(1) +
-        " meter"
-    ).openPopup();
+    // =================================================
+    // POPUP
+    // =================================================
+
+    locationMarker
+        .bindPopup(
+
+            "📱 <b>" +
+
+            escapeHtml(
+
+                deviceName ||
+
+                "Perangkat VEIL"
+
+            ) +
+
+            "</b><br>" +
+
+            "📍 Lokasi perangkat<br>" +
+
+            "Akurasi: ±" +
+
+            Number(
+                accuracy || 0
+            ).toFixed(1) +
+
+            " meter<br><br>" +
+
+
+            '<a href="https://www.google.com/maps/dir/?api=1&destination=' +
+
+            latitude +
+
+            "," +
+
+            longitude +
+
+            '" target="_blank" ' +
+
+            'style="' +
+
+            'display:inline-block;' +
+
+            'padding:10px 14px;' +
+
+            'background:#e53935;' +
+
+            'color:white;' +
+
+            'text-decoration:none;' +
+
+            'border-radius:8px;' +
+
+            'font-weight:bold;' +
+
+            '">' +
+
+            "🧭 Arahkan ke lokasi" +
+
+            "</a>"
+
+        )
+
+        .openPopup();
+
+
+    setTimeout(
+
+        function() {
+
+            map.invalidateSize();
+
+        },
+
+        200
+
+    );
 
 }
 
 
-async function locationFeature() {
+// =====================================================
+// MINTA LOKASI DEVICE TERTENTU
+// =====================================================
 
-    if (!deviceConnected || !connectedDevice) {
-        alert("Perangkat VEIL belum terhubung.");
+async function locationFeature(
+    deviceIdEncoded
+) {
+
+
+    const deviceId =
+        decodeURIComponent(
+            deviceIdEncoded
+        );
+
+
+    const device =
+        getDeviceById(
+            deviceId
+        );
+
+
+    if (!device) {
+
+        alert(
+            "Perangkat tidak ditemukan."
+        );
+
         return;
+
     }
+
 
     const email =
-        localStorage.getItem("veil_verified_email") ||
-        localStorage.getItem("veil_email");
+        localStorage.getItem(
+            "veil_verified_email"
+        ) ||
+
+        localStorage.getItem(
+            "veil_email"
+        );
+
 
     if (!email) {
-        alert("Email VEIL tidak ditemukan.");
+
+        alert(
+            "Email VEIL tidak ditemukan."
+        );
+
         return;
+
     }
 
-    const deviceId = connectedDevice.deviceId;
-
-    if (!deviceId) {
-        alert("Device ID tidak ditemukan.");
-        return;
-    }
 
     try {
 
-        // ==========================================
-        // 1. MINTA PERANGKAT MENGIRIM LOKASI
-        // ==========================================
+
+        // =================================================
+        // REQUEST LOKASI KE SERVER
+        // =================================================
 
         const requestResponse =
-            await fetch("/api/request-location", {
+            await fetch(
 
-                method: "POST",
+                "/api/request-location",
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                {
 
-                body: JSON.stringify({
-                    email: email,
-                    deviceId: deviceId
-                })
+                    method:
+                        "POST",
 
-            });
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            email:
+                                email,
+
+                            deviceId:
+                                deviceId
+
+                        })
+
+                }
+
+            );
 
 
         const requestResult =
@@ -904,137 +1358,232 @@ async function locationFeature() {
 
 
         console.log(
+
             "VEIL LOCATION REQUEST:",
+
             requestResult
+
         );
 
 
         if (
+
             !requestResponse.ok ||
+
             requestResult.success !== true
+
         ) {
 
             alert(
+
                 requestResult.message ||
+
                 "Permintaan lokasi gagal."
+
             );
 
             return;
+
         }
 
 
-        // ==========================================
-        // 2. TUNGGU LOKASI MASUK
-        // ==========================================
-
         alert(
+
             "📍 Permintaan lokasi dikirim.\n\n" +
+
             "Menunggu GPS perangkat..."
+
         );
 
 
+        // =================================================
+        // TUNGGU LOKASI TERBARU
+        // =================================================
+
         let attempts = 0;
+
         const maxAttempts = 15;
 
 
-        const checkLocation =
-            setInterval(async () => {
+        const timer =
 
-                attempts++;
+            setInterval(
+
+                async function() {
 
 
-                try {
+                    attempts++;
 
-                    const locationResponse =
-                        await fetch(
-                            "/api/device-location",
-                            {
 
-                                method: "POST",
+                    try {
 
-                                headers: {
-                                    "Content-Type":
-                                        "application/json"
-                                },
 
-                                body: JSON.stringify({
-                                    email: email,
-                                    deviceId: deviceId
-                                })
+                        const response =
+
+                            await fetch(
+
+                                "/api/device-location",
+
+                                {
+
+                                    method:
+                                        "POST",
+
+                                    headers: {
+
+                                        "Content-Type":
+                                            "application/json"
+
+                                    },
+
+                                    body:
+                                        JSON.stringify({
+
+                                            email:
+                                                email,
+
+                                            deviceId:
+                                                deviceId
+
+                                        })
+
+                                }
+
+                            );
+
+
+                        const result =
+
+                            await response.json();
+
+
+                        console.log(
+
+                            "VEIL LOCATION CHECK:",
+
+                            result
+
+                        );
+
+
+                        if (
+
+                            result.success === true &&
+
+                            result.location
+
+                        ) {
+
+
+                            clearInterval(
+                                timer
+                            );
+
+
+                            const location =
+                                result.location;
+
+
+                            // Simpan lokasi terbaru
+                            const currentDevice =
+                                getDeviceById(
+                                    deviceId
+                                );
+
+
+                            if (
+                                currentDevice
+                            ) {
+
+                                currentDevice.location =
+                                    location;
 
                             }
+
+
+                            // Tampilkan map
+                            showLocationOnMap(
+
+                                location.latitude,
+
+                                location.longitude,
+
+                                location.accuracy,
+
+                                device.deviceName
+
+                            );
+
+
+                            // Refresh daftar
+                            renderDevices();
+
+
+                            return;
+
+                        }
+
+
+                        if (
+
+                            attempts >=
+                            maxAttempts
+
+                        ) {
+
+                            clearInterval(
+                                timer
+                            );
+
+
+                            alert(
+
+                                "⏱️ Lokasi belum diterima.\n\n" +
+
+                                "Pastikan HP teman masih membuka " +
+
+                                "halaman pairing VEIL dan izin lokasi aktif."
+
+                            );
+
+                        }
+
+
+                    } catch (error) {
+
+                        console.error(
+
+                            "VEIL LOCATION CHECK ERROR:",
+
+                            error
+
                         );
 
-
-                    const locationResult =
-                        await locationResponse.json();
-
-
-                    console.log(
-                        "VEIL LOCATION CHECK:",
-                        locationResult
-                    );
-
-
-                    if (
-                        locationResult.success === true &&
-                        locationResult.location
-                    ) {
-
-                        clearInterval(checkLocation);
-
-
-                        const location =
-                            locationResult.location;
-
-
-                        showLocationOnMap(
-                            location.latitude,
-                            location.longitude,
-                            location.accuracy
-                        );
-
-
-                        return;
                     }
 
 
-                    if (attempts >= maxAttempts) {
+                },
 
-                        clearInterval(checkLocation);
+                2000
 
-
-                        alert(
-                            "⏱️ Lokasi belum diterima.\n\n" +
-                            "Pastikan perangkat VEIL masih aktif " +
-                            "dan memberikan izin lokasi."
-                        );
-
-                    }
-
-
-                } catch (error) {
-
-                    console.error(
-                        "VEIL LOCATION CHECK ERROR:",
-                        error
-                    );
-
-                }
-
-            }, 2000);
+            );
 
 
     } catch (error) {
 
         console.error(
+
             "VEIL LOCATION REQUEST ERROR:",
+
             error
+
         );
 
 
         alert(
+
             "Gagal meminta lokasi perangkat."
+
         );
 
     }
@@ -1046,13 +1595,27 @@ async function locationFeature() {
 // LOST MODE
 // =====================================================
 
-function lostModeFeature() {
+function lostModeFeature(
+    deviceIdEncoded
+) {
 
 
-    if (!deviceConnected) {
+    const deviceId =
+        decodeURIComponent(
+            deviceIdEncoded
+        );
+
+
+    const device =
+        getDeviceById(
+            deviceId
+        );
+
+
+    if (!device) {
 
         alert(
-            "Lost Mode akan aktif setelah perangkat VEIL terhubung."
+            "Perangkat tidak ditemukan."
         );
 
         return;
@@ -1061,24 +1624,51 @@ function lostModeFeature() {
 
 
     alert(
-        "Perangkat terhubung.\n\nLost Mode siap digunakan."
+
+        "📱 " +
+
+        (
+
+            device.deviceName ||
+
+            "Perangkat VEIL"
+
+        ) +
+
+        "\n\n" +
+
+        "🔒 Lost Mode siap digunakan."
+
     );
 
 }
-
 
 
 // =====================================================
 // PESAN
 // =====================================================
 
-function textFeature() {
+function textFeature(
+    deviceIdEncoded
+) {
 
 
-    if (!deviceConnected) {
+    const deviceId =
+        decodeURIComponent(
+            deviceIdEncoded
+        );
+
+
+    const device =
+        getDeviceById(
+            deviceId
+        );
+
+
+    if (!device) {
 
         alert(
-            "Fitur pesan akan aktif setelah perangkat VEIL terhubung."
+            "Perangkat tidak ditemukan."
         );
 
         return;
@@ -1087,28 +1677,46 @@ function textFeature() {
 
 
     alert(
-        "Perangkat terhubung.\n\nFitur pesan siap digunakan."
+
+        "📱 " +
+
+        (
+
+            device.deviceName ||
+
+            "Perangkat VEIL"
+
+        ) +
+
+        "\n\n" +
+
+        "🔊 Fitur pesan siap digunakan."
+
     );
 
 }
-
 
 
 // =====================================================
 // MULAI
 // =====================================================
 
+showAccountEmail();
+
 checkDeviceStatus();
 
 
+// =====================================================
+// REFRESH STATUS SETIAP 3 DETIK
+// ===========================
 
-// =====================================================
-// CEK OTOMATIS SETIAP 3 DETIK
-// =====================================================
 
 setInterval(
+
     checkDeviceStatus,
+
     3000
+
 );
 
 

@@ -869,8 +869,7 @@ async function locationFeature() {
         return;
     }
 
-    const deviceId =
-        connectedDevice.deviceId;
+    const deviceId = connectedDevice.deviceId;
 
     if (!deviceId) {
         alert("Device ID tidak ditemukan.");
@@ -880,7 +879,7 @@ async function locationFeature() {
     try {
 
         // ==========================================
-        // 1. MINTA HP TEMAN KIRIM LOKASI
+        // 1. MINTA PERANGKAT MENGIRIM LOKASI
         // ==========================================
 
         const requestResponse =
@@ -889,16 +888,12 @@ async function locationFeature() {
                 method: "POST",
 
                 headers: {
-                    "Content-Type":
-                        "application/json"
+                    "Content-Type": "application/json"
                 },
 
                 body: JSON.stringify({
-
                     email: email,
-
                     deviceId: deviceId
-
                 })
 
             });
@@ -929,7 +924,7 @@ async function locationFeature() {
 
 
         // ==========================================
-        // 2. TUNGGU HP TEMAN MENGIRIM LOKASI
+        // 2. TUNGGU LOKASI MASUK
         // ==========================================
 
         alert(
@@ -939,7 +934,6 @@ async function locationFeature() {
 
 
         let attempts = 0;
-
         const maxAttempts = 15;
 
 
@@ -964,11 +958,8 @@ async function locationFeature() {
                                 },
 
                                 body: JSON.stringify({
-
                                     email: email,
-
                                     deviceId: deviceId
-
                                 })
 
                             }
@@ -992,43 +983,31 @@ async function locationFeature() {
 
                         clearInterval(checkLocation);
 
+
                         const location =
                             locationResult.location;
 
+
                         showLocationOnMap(
-                        location.latitude,
-                        location.longitude,
-                        location.accuracy
-                        );    
+                            location.latitude,
+                            location.longitude,
+                            location.accuracy
+                        );
+
+
                         return;
                     }
 
-                        const mapsUrl =
-                            "https://www.google.com/maps/search/?api=1&query=" +
-                            location.latitude +
-                            "," +
-                            location.longitude;
 
-                            window.open(mapsUrl, "_blank");
+                    if (attempts >= maxAttempts) {
 
-
-                            return;
-                    }
-
-
-                    if (
-                        attempts >= maxAttempts
-                    ) {
-
-                        clearInterval(
-                            checkLocation
-                        );
+                        clearInterval(checkLocation);
 
 
                         alert(
                             "⏱️ Lokasi belum diterima.\n\n" +
-                            "Pastikan HP teman masih membuka " +
-                            "halaman pairing VEIL."
+                            "Pastikan perangkat VEIL masih aktif " +
+                            "dan memberikan izin lokasi."
                         );
 
                     }
@@ -1052,6 +1031,7 @@ async function locationFeature() {
             "VEIL LOCATION REQUEST ERROR:",
             error
         );
+
 
         alert(
             "Gagal meminta lokasi perangkat."

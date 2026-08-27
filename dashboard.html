@@ -331,7 +331,25 @@
 
         }
 
+        #map {
+    width: 100%;
+    height: 400px;
+    margin-bottom: 20px;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.12);
+}
+
     </style>
+
+    <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
 
 </head>
 
@@ -373,6 +391,10 @@
 
 
     <!-- DEVICE CARD -->
+    
+    <!-- MAP LOKASI -->
+    
+    <div id="map"></div>
 
     <section class="card">
 
@@ -487,6 +509,9 @@
 let deviceConnected = false;
 
 let connectedDevice = null;
+
+let map = null;
+let locationMarker = null;
 
 
 
@@ -773,6 +798,60 @@ function updateDeviceUI() {
 // FITUR LOKASI
 // =====================================================
 
+function showLocationOnMap(latitude, longitude, accuracy) {
+
+    if (!map) {
+
+        map = L.map("map").setView(
+            [latitude, longitude],
+            16
+        );
+
+        L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+                maxZoom: 19,
+                attribution: "&copy; OpenStreetMap"
+            }
+        ).addTo(map);
+
+    } else {
+
+        map.setView(
+            [latitude, longitude],
+            16
+        );
+
+    }
+
+
+    if (locationMarker) {
+
+        locationMarker.setLatLng([
+            latitude,
+            longitude
+        ]);
+
+    } else {
+
+        locationMarker =
+            L.marker([
+                latitude,
+                longitude
+            ]).addTo(map);
+
+    }
+
+
+    locationMarker.bindPopup(
+        "📍 Perangkat VEIL<br>" +
+        "Akurasi: ±" +
+        Number(accuracy).toFixed(1) +
+        " meter"
+    ).openPopup();
+
+}
+
 
 async function locationFeature() {
 
@@ -911,30 +990,29 @@ async function locationFeature() {
                         locationResult.location
                     ) {
 
-                        clearInterval(
-                            checkLocation
-                        );
-
+                        clearInterval(checkLocation);
 
                         const location =
                             locationResult.location;
 
-
-                        alert(
-                            "📍 Lokasi perangkat ditemukan.\n\n" +
-                            "Latitude: " +
-                            location.latitude +
-                            "\n" +
-                            "Longitude: " +
-                            location.longitude +
-                            "\n" +
-                            "Akurasi: ±" +
-                            location.accuracy +
-                            " meter"
-                        );
-
-
+                        showLocationOnMap(
+                        location.latitude,
+                        location.longitude,
+                        location.accuracy
+                        );    
                         return;
+                    }
+
+                        const mapsUrl =
+                            "https://www.google.com/maps/search/?api=1&query=" +
+                            location.latitude +
+                            "," +
+                            location.longitude;
+
+                            window.open(mapsUrl, "_blank");
+
+
+                            return;
                     }
 
 

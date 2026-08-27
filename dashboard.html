@@ -963,44 +963,55 @@ function renderDevices() {
 
                             </div>
 
-
-                            <div
-                                class="buttons"
-                            >
+<div class="buttons">
 
 
-                                <button
-                                    class="action connected"
-                                    onclick="locationFeature('${encodedDeviceId}')"
-                                >
+    <button
+        class="action connected"
+        onclick="locationFeature('${encodedDeviceId}')"
+    >
 
-                                    📍 Lokasi
+        📍 Lokasi
 
-                                </button>
-
-
-                                <button
-                                    class="action connected"
-                                    onclick="lostModeFeature('${encodedDeviceId}')"
-                                >
-
-                                    🔒 Lost Mode
-
-                                </button>
+    </button>
 
 
-                                <button
-                                    class="action connected"
-                                    onclick="textFeature('${encodedDeviceId}')"
-                                >
+    <button
+        class="action connected"
+        onclick="lostModeFeature('${encodedDeviceId}')"
+    >
 
-                                    🔊 Pesan
+        🔒 Lost Mode
 
-                                </button>
+    </button>
 
 
-                            </div>
+    <button
+        class="action connected"
+        onclick="textFeature('${encodedDeviceId}')"
+    >
 
+        🔊 Pesan
+
+    </button>
+
+
+    <button
+        class="action"
+        onclick="removeDevice('${encodedDeviceId}')"
+        style="
+            border-color:#6b2222;
+            background:#241313;
+        "
+    >
+
+        🗑️ Hapus
+
+    </button>
+
+
+</div>
+                            
 
                         </div>
 
@@ -1718,6 +1729,181 @@ setInterval(
     3000
 
 );
+
+// =====================================================
+// HAPUS PERANGKAT
+// =====================================================
+
+async function removeDevice(
+    deviceIdEncoded
+) {
+
+    const deviceId =
+        decodeURIComponent(
+            deviceIdEncoded
+        );
+
+
+    const device =
+        getDeviceById(
+            deviceId
+        );
+
+
+    if (!device) {
+
+        alert(
+            "Perangkat tidak ditemukan."
+        );
+
+        return;
+
+    }
+
+
+    const deviceName =
+        device.deviceName ||
+        "Perangkat VEIL";
+
+
+    const confirmDelete =
+        confirm(
+
+            "⚠️ Hapus perangkat?\n\n" +
+
+            "Perangkat: " +
+            deviceName +
+
+            "\n\n" +
+
+            "Perangkat ini akan dihapus " +
+            "dari akun VEIL."
+
+        );
+
+
+    if (!confirmDelete) {
+
+        return;
+
+    }
+
+
+    const email =
+        localStorage.getItem(
+            "veil_verified_email"
+        ) ||
+
+        localStorage.getItem(
+            "veil_email"
+        );
+
+
+    if (!email) {
+
+        alert(
+            "Email VEIL tidak ditemukan."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+
+                "/api/remove-device",
+
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            email:
+                                email,
+
+                            deviceId:
+                                deviceId
+
+                        })
+
+                }
+
+            );
+
+
+        const result =
+            await response.json();
+
+
+        console.log(
+            "VEIL REMOVE DEVICE:",
+            result
+        );
+
+
+        if (
+
+            response.ok &&
+
+            result.success === true
+
+        ) {
+
+            alert(
+                "✅ Perangkat berhasil dihapus."
+            );
+
+
+            // Refresh daftar perangkat
+
+            await checkDeviceStatus();
+
+
+        } else {
+
+            alert(
+
+                result.message ||
+
+                "Gagal menghapus perangkat."
+
+            );
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+
+            "VEIL REMOVE DEVICE ERROR:",
+
+            error
+
+        );
+
+
+        alert(
+            "Gagal terhubung ke server."
+        );
+
+    }
+
+}
 
 
 </script>

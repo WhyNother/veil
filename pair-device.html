@@ -990,6 +990,175 @@ function updateLocationStatus(text) {
 }
 
 
+// ==========================================
+// CEK PERMINTAAN LOKASI DARI DASHBOARD
+// ==========================================
+
+setInterval(async function () {
+
+    const email =
+        localStorage.getItem("veil_email");
+
+    const savedDeviceId =
+        localStorage.getItem("veil_device_id");
+
+
+    if (!email || !savedDeviceId) {
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${SERVER_URL}/api/location-request`,
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        email: email,
+
+                        deviceId:
+                            savedDeviceId
+
+                    })
+
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        console.log(
+            "VEIL LOCATION REQUEST CHECK:",
+            result
+        );
+
+
+        if (
+            result.success === true &&
+            result.request
+        ) {
+
+            console.log(
+                "VEIL: Permintaan GPS diterima."
+            );
+
+
+            navigator.geolocation.getCurrentPosition(
+
+                async function(position) {
+
+                    const latitude =
+                        position.coords.latitude;
+
+                    const longitude =
+                        position.coords.longitude;
+
+                    const accuracy =
+                        position.coords.accuracy;
+
+
+                    try {
+
+                        const locationResponse =
+                            await fetch(
+                                `${SERVER_URL}/api/update-location`,
+                                {
+
+                                    method: "POST",
+
+                                    headers: {
+                                        "Content-Type":
+                                            "application/json"
+                                    },
+
+                                    body: JSON.stringify({
+
+                                        email: email,
+
+                                        deviceId:
+                                            savedDeviceId,
+
+                                        latitude:
+                                            latitude,
+
+                                        longitude:
+                                            longitude,
+
+                                        accuracy:
+                                            accuracy
+
+                                    })
+
+                                }
+                            );
+
+
+                        const locationResult =
+                            await locationResponse.json();
+
+
+                        console.log(
+                            "VEIL LOCATION SENT:",
+                            locationResult
+                        );
+
+
+                    } catch (error) {
+
+                        console.error(
+                            "VEIL SEND LOCATION ERROR:",
+                            error
+                        );
+
+                    }
+
+                },
+
+
+                function(error) {
+
+                    console.error(
+                        "VEIL GPS ERROR:",
+                        error
+                    );
+
+                },
+
+
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 0
+                }
+
+            );
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "VEIL REQUEST CHECK ERROR:",
+            error
+        );
+
+    }
+
+}, 3000);
+
 </script>
 
 </body>

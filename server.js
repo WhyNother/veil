@@ -949,6 +949,9 @@ app.post("/api/pair-device", (req, res) => {
 
         message:
             "Perangkat berhasil dipairing.",
+         
+        email: 
+            pairing.email,
 
         deviceId:
             deviceId,
@@ -1206,6 +1209,9 @@ app.post("/api/update-location", (req, res) => {
         "connected";
 
 
+    device.locationRequest =
+    null;
+        
     console.log(
         "Lokasi diperbarui:",
         device.deviceName,
@@ -1224,6 +1230,201 @@ app.post("/api/update-location", (req, res) => {
 
         location:
             device.location
+
+    });
+
+});
+
+// =====================================================
+// REQUEST LOKASI TERKINI
+// =====================================================
+
+app.post("/api/request-location", (req, res) => {
+
+    const email =
+        normalizeEmail(req.body.email);
+
+    const deviceId =
+        String(
+            req.body.deviceId || ""
+        ).trim();
+
+
+    if (!email) {
+
+        return res.status(400).json({
+
+            success: false,
+
+            message:
+                "Email diperlukan."
+
+        });
+
+    }
+
+
+    if (!deviceId) {
+
+        return res.status(400).json({
+
+            success: false,
+
+            message:
+                "Device ID diperlukan."
+
+        });
+
+    }
+
+
+    const account =
+        accounts.get(email);
+
+
+    if (!account) {
+
+        return res.status(404).json({
+
+            success: false,
+
+            message:
+                "Akun tidak ditemukan."
+
+        });
+
+    }
+
+
+    const device =
+        account.devices.get(deviceId);
+
+
+    if (!device) {
+
+        return res.status(404).json({
+
+            success: false,
+
+            message:
+                "Perangkat tidak ditemukan."
+
+        });
+
+    }
+
+
+    // Buat ID request unik
+
+    const requestId =
+        crypto.randomUUID();
+
+
+    device.locationRequest = {
+
+        requestId:
+            requestId,
+
+        requestedAt:
+            Date.now()
+
+    };
+
+
+    console.log(
+        "Request lokasi:",
+        device.deviceName,
+        "|",
+        requestId
+    );
+
+
+    return res.json({
+
+        success: true,
+
+        requestId:
+            requestId,
+
+        message:
+            "Permintaan lokasi dikirim."
+
+    });
+
+});
+
+
+// =====================================================
+// CEK REQUEST LOKASI OLEH PERANGKAT
+// =====================================================
+
+app.post("/api/location-request", (req, res) => {
+
+    const email =
+        normalizeEmail(req.body.email);
+
+    const deviceId =
+        String(
+            req.body.deviceId || ""
+        ).trim();
+
+
+    if (!email || !deviceId) {
+
+        return res.status(400).json({
+
+            success: false,
+
+            message:
+                "Email dan Device ID diperlukan."
+
+        });
+
+    }
+
+
+    const account =
+        accounts.get(email);
+
+
+    if (!account) {
+
+        return res.status(404).json({
+
+            success: false,
+
+            message:
+                "Akun tidak ditemukan."
+
+        });
+
+    }
+
+
+    const device =
+        account.devices.get(deviceId);
+
+
+    if (!device) {
+
+        return res.status(404).json({
+
+            success: false,
+
+            message:
+                "Perangkat tidak ditemukan."
+
+        });
+
+    }
+
+
+    return res.json({
+
+        success: true,
+
+        request:
+            device.locationRequest || null
 
     });
 

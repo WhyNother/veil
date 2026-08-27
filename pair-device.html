@@ -344,24 +344,98 @@ if (!deviceId) {
 
 
 // =====================================================
-// NAMA DEVICE
+// NAMA / MODEL DEVICE
 // =====================================================
 
 let deviceName =
-    localStorage.getItem(
-        "veil_device_name"
-    );
+    localStorage.getItem("veil_device_name");
 
 
-if (!deviceName) {
+async function getDeviceName() {
+
+    // Kalau sudah pernah tersimpan, pakai yang lama
+    if (
+    deviceName &&
+    deviceName !== "Perangkat VEIL"
+) {
+    return deviceName;
+}
+    let detectedName = "Perangkat VEIL";
+
+    try {
+
+        if (
+            navigator.userAgentData &&
+            navigator.userAgentData.getHighEntropyValues
+        ) {
+
+            const info =
+                await navigator.userAgentData.getHighEntropyValues([
+                    "model",
+                    "platform"
+                ]);
+
+            if (info.model) {
+
+                detectedName =
+                    info.model;
+
+            } else if (info.platform) {
+
+                detectedName =
+                    info.platform;
+
+            }
+
+        } else {
+
+            // Fallback untuk browser yang tidak mendukung userAgentData
+
+            const ua =
+                navigator.userAgent;
+
+            if (/Android/i.test(ua)) {
+
+                detectedName =
+                    "Perangkat Android";
+
+            } else if (/iPhone/i.test(ua)) {
+
+                detectedName =
+                    "iPhone";
+
+            } else if (/iPad/i.test(ua)) {
+
+                detectedName =
+                    "iPad";
+
+            } else {
+
+                detectedName =
+                    "Perangkat VEIL";
+
+            }
+
+        }
+
+    } catch (error) {
+
+        console.warn(
+            "Gagal mendeteksi model perangkat:",
+            error
+        );
+
+    }
 
     deviceName =
-        "Perangkat VEIL";
+        detectedName;
 
     localStorage.setItem(
         "veil_device_name",
         deviceName
     );
+
+    return deviceName;
 }
 
 
@@ -397,6 +471,9 @@ async function pairDevice() {
 
     const code =
         codeInput.value.trim();
+
+        const currentDeviceName =
+            await getDeviceName();
 
 
     message.className = "";
@@ -447,7 +524,7 @@ async function pairDevice() {
                                 deviceId,
 
                             deviceName:
-                                deviceName
+                                currentDeviceName
 
                         })
                 }
@@ -491,9 +568,11 @@ async function pairDevice() {
 
         localStorage.setItem(
             "veil_device_name",
-            deviceName
+            currentDeviceName
         );
 
+        deviceName =
+            currentDeviceName
 
         // =================================================
         // TAMPILAN BERHASIL
@@ -989,175 +1068,6 @@ function updateLocationStatus(text) {
 
 }
 
-
-// ==========================================
-// CEK PERMINTAAN LOKASI DARI DASHBOARD
-// ==========================================
-
-setInterval(async function () {
-
-    const email =
-        localStorage.getItem("veil_email");
-
-    const savedDeviceId =
-        localStorage.getItem("veil_device_id");
-
-
-    if (!email || !savedDeviceId) {
-        return;
-    }
-
-
-    try {
-
-        const response =
-            await fetch(
-                `${SERVER_URL}/api/location-request`,
-                {
-
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-
-                        email: email,
-
-                        deviceId:
-                            savedDeviceId
-
-                    })
-
-                }
-            );
-
-
-        const result =
-            await response.json();
-
-
-        console.log(
-            "VEIL LOCATION REQUEST CHECK:",
-            result
-        );
-
-
-        if (
-            result.success === true &&
-            result.request
-        ) {
-
-            console.log(
-                "VEIL: Permintaan GPS diterima."
-            );
-
-
-            navigator.geolocation.getCurrentPosition(
-
-                async function(position) {
-
-                    const latitude =
-                        position.coords.latitude;
-
-                    const longitude =
-                        position.coords.longitude;
-
-                    const accuracy =
-                        position.coords.accuracy;
-
-
-                    try {
-
-                        const locationResponse =
-                            await fetch(
-                                `${SERVER_URL}/api/update-location`,
-                                {
-
-                                    method: "POST",
-
-                                    headers: {
-                                        "Content-Type":
-                                            "application/json"
-                                    },
-
-                                    body: JSON.stringify({
-
-                                        email: email,
-
-                                        deviceId:
-                                            savedDeviceId,
-
-                                        latitude:
-                                            latitude,
-
-                                        longitude:
-                                            longitude,
-
-                                        accuracy:
-                                            accuracy
-
-                                    })
-
-                                }
-                            );
-
-
-                        const locationResult =
-                            await locationResponse.json();
-
-
-                        console.log(
-                            "VEIL LOCATION SENT:",
-                            locationResult
-                        );
-
-
-                    } catch (error) {
-
-                        console.error(
-                            "VEIL SEND LOCATION ERROR:",
-                            error
-                        );
-
-                    }
-
-                },
-
-
-                function(error) {
-
-                    console.error(
-                        "VEIL GPS ERROR:",
-                        error
-                    );
-
-                },
-
-
-                {
-                    enableHighAccuracy: true,
-                    timeout: 15000,
-                    maximumAge: 0
-                }
-
-            );
-
-        }
-
-
-    } catch (error) {
-
-        console.error(
-            "VEIL REQUEST CHECK ERROR:",
-            error
-        );
-
-    }
-
-}, 3000);
 
 </script>
 

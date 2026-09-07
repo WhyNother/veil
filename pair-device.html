@@ -663,6 +663,92 @@ async function pairDevice() {
 
         startLocationRequestListener();
 
+        // =====================================================
+        // LOST MODE STATUS LISTENER
+        // =====================================================
+
+        let lastLostModeState = null;
+
+        async function checkLostModeStatus() {
+
+        const email =
+        localStorage.getItem("veil_verified_email") ||
+        localStorage.getItem("veil_email");
+
+        const deviceId =
+        localStorage.getItem("veil_device_id");
+
+        if (!email || !deviceId) {
+        return;
+        }
+
+        try {
+
+        const response = await fetch(
+            "/api/lost-mode-status",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: email,
+                    deviceId: deviceId
+                })
+            }
+        );
+
+        const result =
+            await response.json();
+
+        if (!response.ok || !result.success) {
+            return;
+        }
+
+        const lostMode =
+            result.lostMode === true;
+
+        // Hanya bereaksi kalau status berubah
+        if (lastLostModeState === lostMode) {
+            return;
+        }
+
+        lastLostModeState = lostMode;
+
+        console.log(
+            "VEIL Lost Mode:",
+            lostMode ? "ON" : "OFF"
+        );
+
+        if (lostMode) {
+
+            console.log(
+                "🔒 VEIL: Lost Mode AKTIF"
+            );
+
+        } else {
+
+            console.log(
+                "🔓 VEIL: Lost Mode NONAKTIF"
+            );
+        }
+
+    } catch (error) {
+
+        console.error(
+            "VEIL Lost Mode Check Error:",
+            error
+        );
+    }
+}
+
+// Cek Lost Mode setiap 3 detik
+checkLostModeStatus();
+
+setInterval(() => {
+    checkLostModeStatus();
+}, 3000);
+
 
     }
 

@@ -1605,6 +1605,231 @@ app.post("/api/remove-device", (req, res) => {
 
 });
 
+
+// =====================================================
+// PESAN KE PERANGKAT
+// =====================================================
+
+app.post("/api/send-message", (req, res) => {
+
+    const email =
+        normalizeEmail(req.body.email);
+
+    const deviceId =
+        String(
+            req.body.deviceId || ""
+        ).trim();
+
+    const text =
+        String(
+            req.body.text || ""
+        ).trim();
+
+    const speak =
+        req.body.speak !== false;
+
+
+    // =================================================
+    // VALIDASI
+    // =================================================
+
+    if (!email) {
+        return res.status(400).json({
+            success: false,
+            message: "Email diperlukan."
+        });
+    }
+
+    if (!deviceId) {
+        return res.status(400).json({
+            success: false,
+            message: "Device ID diperlukan."
+        });
+    }
+
+    if (!text) {
+        return res.status(400).json({
+            success: false,
+            message: "Pesan tidak boleh kosong."
+        });
+    }
+
+    if (text.length > 300) {
+        return res.status(400).json({
+            success: false,
+            message: "Pesan maksimal 300 karakter."
+        });
+    }
+
+
+    // =================================================
+    // CARI AKUN
+    // =================================================
+
+    const account =
+        accounts.get(email);
+
+    if (!account) {
+        return res.status(404).json({
+            success: false,
+            message: "Akun tidak ditemukan."
+        });
+    }
+
+
+    // =================================================
+    // CARI PERANGKAT
+    // =================================================
+
+    const device =
+        account.devices.get(deviceId);
+
+    if (!device) {
+        return res.status(404).json({
+            success: false,
+            message: "Perangkat tidak ditemukan."
+        });
+    }
+
+
+    // =================================================
+    // SIMPAN PESAN
+    // =================================================
+
+    device.messageRequest = {
+
+        requestId:
+            crypto.randomUUID(),
+
+        text:
+            text,
+
+        speak:
+            speak,
+
+        createdAt:
+            Date.now()
+
+    };
+
+
+    console.log(
+        "Pesan dikirim ke:",
+        device.deviceName,
+        "|",
+        text
+    );
+
+
+    return res.json({
+
+        success: true,
+
+        message:
+            "Pesan berhasil dikirim.",
+
+        deviceId:
+            deviceId,
+
+        deviceName:
+            device.deviceName
+
+    });
+
+});
+
+
+// =====================================================
+// PERANGKAT CEK PESAN
+// =====================================================
+
+app.post("/api/message-request", (req, res) => {
+
+    const email =
+        normalizeEmail(req.body.email);
+
+    const deviceId =
+        String(
+            req.body.deviceId || ""
+        ).trim();
+
+
+    if (!email || !deviceId) {
+
+        return res.status(400).json({
+
+            success: false,
+
+            message:
+                "Email dan Device ID diperlukan."
+
+        });
+
+    }
+
+
+    const account =
+        accounts.get(email);
+
+
+    if (!account) {
+
+        return res.status(404).json({
+
+            success: false,
+
+            message:
+                "Akun tidak ditemukan."
+
+        });
+
+    }
+
+
+    const device =
+        account.devices.get(deviceId);
+
+
+    if (!device) {
+
+        return res.status(404).json({
+
+            success: false,
+
+            message:
+                "Perangkat tidak ditemukan."
+
+        });
+
+    }
+
+
+    // =================================================
+    // AMBIL PESAN
+    // =================================================
+
+    const request =
+        device.messageRequest || null;
+
+
+    // =================================================
+    // HAPUS PESAN SETELAH DIAMBIL
+    // =================================================
+
+    device.messageRequest = null;
+
+
+    return res.json({
+
+        success: true,
+
+        request:
+            request
+
+    });
+
+});
+
 // =====================================================
 // LOST MODE
 // =====================================================

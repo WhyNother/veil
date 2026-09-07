@@ -338,6 +338,12 @@
 
         }
 
+        .action.lost-active {
+        background: #ffffff;
+        border-color: #ffffff;
+        color: #111111;
+        }
+
         .empty {
 
             text-align: center;
@@ -977,12 +983,10 @@ function renderDevices() {
 
 
     <button
-        class="action connected"
-        onclick="lostModeFeature('${encodedDeviceId}')"
+    class="action connected ${device.lostMode === true ? "lost-active" : ""}"
+    onclick="lostModeFeature('${encodedDeviceId}')"
     >
-
-        🔒 Lost Mode
-
+    🔒 Lost Mode
     </button>
 
 
@@ -1606,52 +1610,92 @@ async function locationFeature(
 // LOST MODE
 // =====================================================
 
-function lostModeFeature(
-    deviceIdEncoded
-) {
-
+async function lostModeFeature(deviceIdEncoded) {
 
     const deviceId =
-        decodeURIComponent(
-            deviceIdEncoded
-        );
-
+        decodeURIComponent(deviceIdEncoded);
 
     const device =
-        getDeviceById(
-            deviceId
-        );
-
+        getDeviceById(deviceId);
 
     if (!device) {
-
-        alert(
-            "Perangkat tidak ditemukan."
-        );
-
+        alert("Perangkat tidak ditemukan.");
         return;
-
     }
 
+    const email =
+        localStorage.getItem("veil_verified_email") ||
+        localStorage.getItem("veil_email");
 
-    alert(
+    if (!email) {
+        alert("Email VEIL tidak ditemukan.");
+        return;
+    }
 
-        "📱 " +
+    const currentState =
+        device.lostMode === true;
 
-        (
+    const newState =
+        !currentState;
 
-            device.deviceName ||
+    try {
 
-            "Perangkat VEIL"
+        const response =
+            await fetch("/api/lost-mode", {
 
-        ) +
+                method: "POST",
 
-        "\n\n" +
+                headers: {
+                    "Content-Type": "application/json"
+                },
 
-        "🔒 Lost Mode siap digunakan."
+                body: JSON.stringify({
+                    email: email,
+                    deviceId: deviceId,
+                    enabled: newState
+                })
 
-    );
+            });
 
+        const result =
+            await response.json();
+
+        console.log(
+            "VEIL LOST MODE:",
+            result
+        );
+
+        if (
+            !response.ok ||
+            result.success !== true
+        ) {
+
+            alert(
+                result.message ||
+                "Gagal mengubah Lost Mode."
+            );
+
+            return;
+        }
+
+        // Simpan status terbaru
+        device.lostMode =
+            result.lostMode === true;
+
+        // Refresh tampilan
+        renderDevices();
+
+    } catch (error) {
+
+        console.error(
+            "VEIL LOST MODE ERROR:",
+            error
+        );
+
+        alert(
+            "Gagal menghubungi server VEIL."
+        );
+    }
 }
 
 

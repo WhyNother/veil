@@ -1698,6 +1698,49 @@ app.post("/api/lost-mode", (req, res) => {
 
 });
 
+// =====================================================
+// CHECK LOST MODE STATUS
+// =====================================================
+
+app.post("/api/lost-mode-status", (req, res) => {
+
+    const email = normalizeEmail(req.body.email);
+    const deviceId = String(req.body.deviceId || "").trim();
+
+    if (!email || !deviceId) {
+        return res.status(400).json({
+            success: false,
+            message: "Email dan Device ID diperlukan."
+        });
+    }
+
+    const account = accounts.get(email);
+
+    if (!account) {
+        return res.status(404).json({
+            success: false,
+            message: "Akun tidak ditemukan."
+        });
+    }
+
+    const device = account.devices.get(deviceId);
+
+    if (!device) {
+        return res.status(404).json({
+            success: false,
+            message: "Perangkat tidak ditemukan."
+        });
+    }
+
+    return res.json({
+        success: true,
+        deviceId: deviceId,
+        deviceName: device.deviceName,
+        lostMode: device.lostMode === true
+    });
+
+});
+
 
 // =====================================================
 // SERVER

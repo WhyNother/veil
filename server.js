@@ -1605,6 +1605,99 @@ app.post("/api/remove-device", (req, res) => {
 
 });
 
+// =====================================================
+// LOST MODE
+// =====================================================
+
+app.post("/api/lost-mode", (req, res) => {
+
+    const email = normalizeEmail(req.body.email);
+
+    const deviceId = String(
+        req.body.deviceId || ""
+    ).trim();
+
+    const enabled = req.body.enabled === true;
+
+
+    // =================================================
+    // VALIDASI
+    // =================================================
+
+    if (!email) {
+        return res.status(400).json({
+            success: false,
+            message: "Email diperlukan."
+        });
+    }
+
+    if (!deviceId) {
+        return res.status(400).json({
+            success: false,
+            message: "Device ID diperlukan."
+        });
+    }
+
+
+    // =================================================
+    // CARI AKUN
+    // =================================================
+
+    const account = accounts.get(email);
+
+    if (!account) {
+        return res.status(404).json({
+            success: false,
+            message: "Akun tidak ditemukan."
+        });
+    }
+
+
+    // =================================================
+    // CARI DEVICE
+    // =================================================
+
+    const device = account.devices.get(deviceId);
+
+    if (!device) {
+        return res.status(404).json({
+            success: false,
+            message: "Perangkat tidak ditemukan."
+        });
+    }
+
+
+    // =================================================
+    // SIMPAN STATUS LOST MODE
+    // =================================================
+
+    device.lostMode = enabled;
+
+
+    console.log(
+        "Lost Mode:",
+        device.deviceName,
+        "|",
+        enabled ? "ON" : "OFF"
+    );
+
+
+    // =================================================
+    // RESPONSE
+    // =================================================
+
+    return res.json({
+        success: true,
+        deviceId: deviceId,
+        deviceName: device.deviceName,
+        lostMode: device.lostMode,
+        message: enabled
+            ? "Lost Mode aktif."
+            : "Lost Mode nonaktif."
+    });
+
+});
+
 
 // =====================================================
 // SERVER

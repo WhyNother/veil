@@ -1968,6 +1968,176 @@ app.post("/api/lost-mode-status", (req, res) => {
 
 
 // =====================================================
+// PESAN PERANGKAT
+// =====================================================
+
+app.post("/api/send-message", (req, res) => {
+
+    const email =
+        normalizeEmail(req.body.email);
+
+    const deviceId =
+        String(
+            req.body.deviceId || ""
+        ).trim();
+
+    const message =
+        String(
+            req.body.message || ""
+        ).trim();
+
+    if (!email || !deviceId) {
+
+        return res.status(400).json({
+            success: false,
+            message:
+                "Email dan Device ID diperlukan."
+        });
+
+    }
+
+    if (!message) {
+
+        return res.status(400).json({
+            success: false,
+            message:
+                "Pesan tidak boleh kosong."
+        });
+
+    }
+
+    const account =
+        accounts.get(email);
+
+    if (!account) {
+
+        return res.status(404).json({
+            success: false,
+            message:
+                "Akun tidak ditemukan."
+        });
+
+    }
+
+    const device =
+        account.devices.get(deviceId);
+
+    if (!device) {
+
+        return res.status(404).json({
+            success: false,
+            message:
+                "Perangkat tidak ditemukan."
+        });
+
+    }
+
+    // Simpan perintah pesan
+    device.messageRequest = {
+
+        requestId:
+            crypto.randomUUID(),
+
+        message:
+            message,
+
+        createdAt:
+            Date.now()
+
+    };
+
+    console.log(
+        "VEIL PESAN:",
+        device.deviceName,
+        "|",
+        message
+    );
+
+    return res.json({
+
+        success: true,
+
+        message:
+            "Pesan berhasil dikirim.",
+
+        request:
+            device.messageRequest
+
+    });
+
+});
+
+
+// =====================================================
+// CEK PESAN PERANGKAT
+// =====================================================
+
+app.post("/api/message-request", (req, res) => {
+
+    const email =
+        normalizeEmail(req.body.email);
+
+    const deviceId =
+        String(
+            req.body.deviceId || ""
+        ).trim();
+
+    if (!email || !deviceId) {
+
+        return res.status(400).json({
+            success: false,
+            message:
+                "Email dan Device ID diperlukan."
+        });
+
+    }
+
+    const account =
+        accounts.get(email);
+
+    if (!account) {
+
+        return res.status(404).json({
+            success: false,
+            message:
+                "Akun tidak ditemukan."
+        });
+
+    }
+
+    const device =
+        account.devices.get(deviceId);
+
+    if (!device) {
+
+        return res.status(404).json({
+            success: false,
+            message:
+                "Perangkat tidak ditemukan."
+        });
+
+    }
+
+    const request =
+        device.messageRequest || null;
+
+    // Setelah dikirim ke HP,
+    // hapus request supaya tidak diputar ulang
+    device.messageRequest = null;
+
+    return res.json({
+
+        success: true,
+
+        request:
+            request
+
+    });
+
+});
+
+
+// =====================================================
 // SERVER
 // =====================================================
 

@@ -338,12 +338,6 @@
 
         }
 
-        .action.lost-active {
-        background: #ffffff;
-        border-color: #ffffff;
-        color: #111111;
-        }
-
         .empty {
 
             text-align: center;
@@ -983,10 +977,12 @@ function renderDevices() {
 
 
     <button
-    class="action connected ${device.lostMode === true ? "lost-active" : ""}"
-    onclick="lostModeFeature('${encodedDeviceId}')"
+        class="action connected"
+        onclick="lostModeFeature('${encodedDeviceId}')"
     >
-    🔒 Lost Mode
+
+        🔒 Lost Mode
+
     </button>
 
 
@@ -1610,100 +1606,7 @@ async function locationFeature(
 // LOST MODE
 // =====================================================
 
-async function lostModeFeature(deviceIdEncoded) {
-
-    const deviceId =
-        decodeURIComponent(deviceIdEncoded);
-
-    const device =
-        getDeviceById(deviceId);
-
-    if (!device) {
-        alert("Perangkat tidak ditemukan.");
-        return;
-    }
-
-    const email =
-        localStorage.getItem("veil_verified_email") ||
-        localStorage.getItem("veil_email");
-
-    if (!email) {
-        alert("Email VEIL tidak ditemukan.");
-        return;
-    }
-
-    const currentState =
-        device.lostMode === true;
-
-    const newState =
-        !currentState;
-
-    try {
-
-        const response =
-            await fetch("/api/lost-mode", {
-
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify({
-                    email: email,
-                    deviceId: deviceId,
-                    enabled: newState
-                })
-
-            });
-
-        const result =
-            await response.json();
-
-        console.log(
-            "VEIL LOST MODE:",
-            result
-        );
-
-        if (
-            !response.ok ||
-            result.success !== true
-        ) {
-
-            alert(
-                result.message ||
-                "Gagal mengubah Lost Mode."
-            );
-
-            return;
-        }
-
-        // Simpan status terbaru
-        device.lostMode =
-            result.lostMode === true;
-
-        // Refresh tampilan
-        renderDevices();
-
-    } catch (error) {
-
-        console.error(
-            "VEIL LOST MODE ERROR:",
-            error
-        );
-
-        alert(
-            "Gagal menghubungi server VEIL."
-        );
-    }
-}
-
-
-// =====================================================
-// PESAN
-// =====================================================
-
-function textFeature(
+function lostModeFeature(
     deviceIdEncoded
 ) {
 
@@ -1745,11 +1648,250 @@ function textFeature(
 
         "\n\n" +
 
-        "🔊 Fitur pesan siap digunakan."
+        "🔒 Lost Mode siap digunakan."
 
     );
 
 }
+
+
+// =====================================================
+// PESAN
+// =====================================================
+
+function textFeature(
+    deviceIdEncoded
+) {
+
+    const deviceId =
+        decodeURIComponent(deviceIdEncoded);
+
+    const device =
+        getDeviceById(deviceId);
+
+    if (!device) {
+        alert("Perangkat tidak ditemukan.");
+        return;
+    }
+
+    const old = document.getElementById("veilMessageModal");
+    if (old) old.remove();
+
+    const modal = document.createElement("div");
+    modal.id = "veilMessageModal";
+
+    modal.innerHTML = `
+        <div style="
+            width:92%;
+            max-width:460px;
+            padding:24px;
+            border-radius:18px;
+            background:#101722;
+            border:1px solid rgba(80,170,255,.35);
+            box-shadow:0 20px 60px rgba(0,0,0,.5);
+        ">
+            <div style="font-size:20px;font-weight:bold;margin-bottom:6px;">
+                🔊 Pesan ke Perangkat
+            </div>
+
+            <div style="font-size:13px;color:#9fb0c5;margin-bottom:18px;">
+                ${escapeHtml(device.deviceName || "Perangkat VEIL")}
+            </div>
+
+            <label style="display:block;font-size:13px;color:#cbd5e1;margin-bottom:7px;">
+                Tulisan
+            </label>
+
+            <textarea
+                id="veilMessageText"
+                maxlength="1000"
+                placeholder="Tulis pesan yang ingin ditampilkan..."
+                style="
+                    width:100%;
+                    min-height:110px;
+                    resize:vertical;
+                    padding:12px;
+                    border-radius:12px;
+                    border:1px solid #334155;
+                    background:#0b111b;
+                    color:white;
+                    outline:none;
+                    font:inherit;
+                    box-sizing:border-box;
+                "
+            ></textarea>
+
+            <label style="display:block;font-size:13px;color:#cbd5e1;margin:16px 0 7px;">
+                Suara custom (opsional)
+            </label>
+
+            <input
+                id="veilMessageAudio"
+                type="file"
+                accept="audio/*"
+                style="width:100%;color:#cbd5e1;"
+            >
+
+            <div style="font-size:12px;color:#718096;margin-top:7px;">
+                Maksimal 4 MB. Kalau tidak pilih audio, tulisan akan dibacakan dengan suara sistem HP.
+            </div>
+
+            <div id="veilMessageStatus" style="
+                display:none;
+                margin-top:14px;
+                padding:10px;
+                border-radius:10px;
+                font-size:13px;
+            "></div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px;">
+                <button
+                    type="button"
+                    onclick="document.getElementById('veilMessageModal').remove()"
+                    style="
+                        height:46px;
+                        border-radius:10px;
+                        border:1px solid #334155;
+                        background:#171f2b;
+                        color:white;
+                        font-weight:bold;
+                        cursor:pointer;
+                    "
+                >
+                    Batal
+                </button>
+
+                <button
+                    id="veilSendMessageButton"
+                    type="button"
+                    onclick="sendVeilMessage('${encodeURIComponent(deviceId)}')"
+                    style="
+                        height:46px;
+                        border:none;
+                        border-radius:10px;
+                        background:#1683ff;
+                        color:white;
+                        font-weight:bold;
+                        cursor:pointer;
+                    "
+                >
+                    🔊 KIRIM
+                </button>
+            </div>
+        </div>
+    `;
+
+    Object.assign(modal.style, {
+        position: "fixed",
+        inset: "0",
+        zIndex: "999998",
+        background: "rgba(0,0,0,.72)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "20px"
+    });
+
+    document.body.appendChild(modal);
+}
+
+async function sendVeilMessage(deviceIdEncoded) {
+
+    const deviceId = decodeURIComponent(deviceIdEncoded);
+    const email =
+        localStorage.getItem("veil_verified_email") ||
+        localStorage.getItem("veil_email");
+
+    const text =
+        document.getElementById("veilMessageText")?.value.trim() || "";
+
+    const audioInput =
+        document.getElementById("veilMessageAudio");
+
+    const status =
+        document.getElementById("veilMessageStatus");
+
+    const button =
+        document.getElementById("veilSendMessageButton");
+
+    if (!email) {
+        alert("Email VEIL tidak ditemukan.");
+        return;
+    }
+
+    const file = audioInput?.files?.[0] || null;
+
+    if (!text && !file) {
+        status.style.display = "block";
+        status.style.background = "rgba(255,80,80,.12)";
+        status.style.color = "#ff8585";
+        status.textContent = "Isi tulisan atau pilih file suara dulu.";
+        return;
+    }
+
+    if (file && file.size > 4 * 1024 * 1024) {
+        status.style.display = "block";
+        status.style.background = "rgba(255,80,80,.12)";
+        status.style.color = "#ff8585";
+        status.textContent = "File suara maksimal 4 MB.";
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "MENGIRIM...";
+
+    try {
+        let audioDataUrl = "";
+
+        if (file) {
+            audioDataUrl = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(String(reader.result || ""));
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        const response = await fetch("/api/send-message", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email,
+                deviceId,
+                text,
+                audioDataUrl
+            })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || result.success !== true) {
+            throw new Error(result.message || "Pesan gagal dikirim.");
+        }
+
+        status.style.display = "block";
+        status.style.background = "rgba(0,220,130,.12)";
+        status.style.color = "#54ffac";
+        status.textContent = "🟢 Pesan berhasil dikirim ke perangkat.";
+
+        setTimeout(() => {
+            const modal = document.getElementById("veilMessageModal");
+            if (modal) modal.remove();
+        }, 900);
+
+    } catch (error) {
+        console.error("VEIL MESSAGE ERROR:", error);
+        status.style.display = "block";
+        status.style.background = "rgba(255,80,80,.12)";
+        status.style.color = "#ff8585";
+        status.textContent = error.message || "Gagal mengirim pesan.";
+        button.disabled = false;
+        button.textContent = "🔊 KIRIM";
+    }
+}
+
 
 
 // =====================================================

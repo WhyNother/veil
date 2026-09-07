@@ -1,23 +1,41 @@
 ﻿<!DOCTYPE html>
 <html lang="id">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>VEIL - Hubungkan Perangkat</title>
 
     <style>
-        * { box-sizing: border-box; }
+
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             margin: 0;
             min-height: 100vh;
+
             font-family: Arial, sans-serif;
+
             color: white;
+
             background:
-                linear-gradient(rgba(3, 15, 40, 0.90), rgba(3, 15, 40, 0.95)),
+                linear-gradient(
+                    rgba(3, 15, 40, 0.90),
+                    rgba(3, 15, 40, 0.95)
+                ),
                 url("veil-bg.jpg");
+
             background-size: cover;
             background-position: center;
+
             display: flex;
             justify-content: center;
             align-items: center;
@@ -30,863 +48,1437 @@
 
         .logo {
             text-align: center;
+
             font-size: 48px;
             font-weight: 800;
+
             letter-spacing: 8px;
+
             margin-bottom: 5px;
         }
 
         .subtitle {
             text-align: center;
+
             color: #4da3ff;
+
             font-size: 14px;
             letter-spacing: 2px;
+
             margin-bottom: 35px;
         }
 
         .card {
             padding: 30px 25px;
+
             border-radius: 20px;
-            background: rgba(5, 20, 50, 0.80);
-            border: 1px solid rgba(80, 170, 255, 0.35);
-            box-shadow: 0 0 30px rgba(0, 120, 255, 0.20);
+
+            background:
+                rgba(5, 20, 50, 0.80);
+
+            border:
+                1px solid
+                rgba(80, 170, 255, 0.35);
+
+            box-shadow:
+                0 0 30px
+                rgba(0, 120, 255, 0.20);
         }
 
         h2 {
             margin-top: 0;
+
             text-align: center;
+
             font-size: 25px;
         }
 
         .description {
             text-align: center;
+
             color: #b9c8dc;
+
             line-height: 1.5;
+
             font-size: 14px;
+
             margin-bottom: 25px;
         }
 
         input {
             width: 100%;
             height: 60px;
-            border: 1px solid rgba(100, 180, 255, 0.5);
+
+            border:
+                1px solid
+                rgba(100, 180, 255, 0.5);
+
             border-radius: 12px;
-            background: rgba(0, 0, 0, 0.25);
+
+            background:
+                rgba(0, 0, 0, 0.25);
+
             color: white;
+
             text-align: center;
+
             font-size: 28px;
             font-weight: bold;
+
             letter-spacing: 8px;
+
             outline: none;
         }
 
         input:focus {
             border-color: #299cff;
-            box-shadow: 0 0 15px rgba(41, 156, 255, 0.3);
+
+            box-shadow:
+                0 0 15px
+                rgba(41, 156, 255, 0.3);
         }
 
         button {
             width: 100%;
             height: 55px;
+
             margin-top: 18px;
+
             border: none;
             border-radius: 12px;
-            background: linear-gradient(90deg, #ff4d4d, #ff6868);
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #ff4d4d,
+                    #ff6868
+                );
+
             color: white;
+
             font-size: 16px;
             font-weight: bold;
+
             cursor: pointer;
         }
 
         button:disabled {
             opacity: 0.6;
+
             cursor: not-allowed;
         }
 
         #message {
             margin-top: 20px;
+
             padding: 12px;
+
             border-radius: 10px;
+
             text-align: center;
+
             font-size: 14px;
+
             display: none;
         }
 
         #message.success {
             display: block;
-            background: rgba(0, 180, 100, 0.15);
-            border: 1px solid rgba(0, 220, 130, 0.5);
+
+            background:
+                rgba(0, 180, 100, 0.15);
+
+            border:
+                1px solid
+                rgba(0, 220, 130, 0.5);
+
             color: #54ffac;
         }
 
         #message.error {
             display: block;
-            background: rgba(255, 60, 60, 0.15);
-            border: 1px solid rgba(255, 80, 80, 0.5);
+
+            background:
+                rgba(255, 60, 60, 0.15);
+
+            border:
+                1px solid
+                rgba(255, 80, 80, 0.5);
+
             color: #ff7777;
         }
 
         .back {
             display: block;
+
             text-align: center;
+
             margin-top: 20px;
+
             color: #80bfff;
+
             text-decoration: none;
+
             font-size: 14px;
         }
 
-        .back:hover { text-decoration: underline; }
-
-        .device-success {
-            text-align: center;
-            padding: 20px 5px;
-        }
-
-        .success-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px;
-            border-radius: 50%;
-            background: rgba(0, 220, 130, 0.15);
-            border: 2px solid #54ffac;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 42px;
-            color: #54ffac;
-        }
-
-        .device-success h2 {
-            color: #54ffac;
-            margin-bottom: 15px;
-        }
-
-        .device-info {
-            color: #b9c8dc;
-            line-height: 1.6;
-            font-size: 14px;
-        }
-
-        .device-name {
-            margin-top: 20px;
-            padding: 12px;
-            border-radius: 10px;
-            background: rgba(0, 0, 0, 0.20);
-            color: #80bfff;
-            font-size: 13px;
-        }
-
-        .location-status {
-            margin-top: 20px;
-            padding: 12px;
-            border-radius: 10px;
-            background: rgba(0, 0, 0, 0.20);
-            color: #ffffff;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-
-        .finish-link {
-            display: block;
-            margin-top: 22px;
-            padding: 15px;
-            border-radius: 12px;
-            background: linear-gradient(90deg, #168cff, #299cff);
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        /* VEIL Lost Mode - browser/web simulation only */
-        #veilLostModeOverlay {
-            position: fixed;
-            inset: 0;
-            z-index: 999999;
-            background: #080d16;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: Arial, sans-serif;
-            color: white;
-        }
-
-        .lost-mode-content {
-            width: 100%;
-            max-width: 420px;
-            text-align: center;
-            padding: 30px;
-        }
-
-        .lost-mode-lock {
-            width: 90px;
-            height: 90px;
-            margin: 0 auto 25px;
-            border-radius: 50%;
-            background: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 45px;
-        }
-
-        .lost-mode-content h1 {
-            margin: 0 0 15px;
-            font-size: 28px;
-        }
-
-        .lost-mode-content h2 {
-            margin: 0 0 15px;
-            font-size: 20px;
-        }
-
-        .lost-mode-content p {
-            margin: 0;
-            color: #cbd5e1;
-            line-height: 1.6;
-            font-size: 14px;
-        }
-
-        .lost-mode-badge {
-            margin-top: 25px;
-            padding: 15px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #ffffff;
-            font-size: 13px;
-        }
     </style>
+
 </head>
 
+
 <body>
-    <div class="container">
-        <div class="logo">VEIL</div>
 
-        <div class="subtitle">
-            Lost Phone Protection System
-        </div>
+<div class="container">
 
-        <div class="card">
-            <h2>Hubungkan Perangkat</h2>
-
-            <div class="description">
-                Masukkan kode pairing 6 digit
-                yang diberikan oleh pemilik
-                akun VEIL.
-            </div>
-
-            <input
-                id="code"
-                type="text"
-                inputmode="numeric"
-                maxlength="6"
-                placeholder="000000"
-                autocomplete="off"
-            >
-
-            <button id="pairButton" type="button" onclick="pairDevice()">
-                HUBUNGKAN
-            </button>
-
-            <div id="message"></div>
-
-            <a href="index.html" class="back">
-                ← Kembali
-            </a>
-        </div>
+    <div class="logo">
+        VEIL
     </div>
 
-    <script>
-        // =====================================================
-        // SERVER VEIL
-        // =====================================================
-        // Kosong = gunakan server yang sama dengan halaman ini.
-        const SERVER_URL = "";
+    <div class="subtitle">
+        Lost Phone Protection System
+    </div>
 
-        // =====================================================
-        // ELEMENT
-        // =====================================================
-        const codeInput = document.getElementById("code");
-        const pairButton = document.getElementById("pairButton");
-        const message = document.getElementById("message");
+    <div class="card">
 
-        // =====================================================
-        // IDENTITAS DEVICE
-        // =====================================================
-        let deviceId = localStorage.getItem("veil_device_id");
+        <h2>
+            Hubungkan Perangkat
+        </h2>
 
-        if (!deviceId) {
-            if (
-                window.crypto &&
-                typeof window.crypto.randomUUID === "function"
-            ) {
-                deviceId = window.crypto.randomUUID();
+        <div class="description">
+            Masukkan kode pairing 6 digit
+            yang diberikan oleh pemilik
+            akun VEIL.
+        </div>
+
+        <input
+            id="code"
+            type="text"
+            inputmode="numeric"
+            maxlength="6"
+            placeholder="000000"
+            autocomplete="off"
+        >
+
+        <button
+            id="pairButton"
+            onclick="pairDevice()"
+        >
+            HUBUNGKAN
+        </button>
+
+        <div id="message"></div>
+
+        <a
+            href="index.html"
+            class="back"
+        >
+            ← Kembali
+        </a>
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+// =====================================================
+// SERVER
+// =====================================================
+
+const SERVER_URL = "";
+
+
+// =====================================================
+// ELEMENT
+// =====================================================
+
+const codeInput =
+    document.getElementById("code");
+
+const pairButton =
+    document.getElementById("pairButton");
+
+const message =
+    document.getElementById("message");
+
+
+// =====================================================
+// IDENTITAS DEVICE
+// =====================================================
+
+let deviceId =
+    localStorage.getItem("veil_device_id");
+
+
+if (!deviceId) {
+
+    if (
+        window.crypto &&
+        typeof window.crypto.randomUUID ===
+        "function"
+    ) {
+
+        deviceId =
+            window.crypto.randomUUID();
+
+    } else {
+
+        deviceId =
+            "veil-" +
+            Date.now() +
+            "-" +
+            Math.random()
+                .toString(36)
+                .substring(2, 12);
+
+    }
+
+    localStorage.setItem(
+        "veil_device_id",
+        deviceId
+    );
+}
+
+
+// =====================================================
+// NAMA / MODEL DEVICE
+// =====================================================
+
+let deviceName =
+    localStorage.getItem("veil_device_name");
+
+
+async function getDeviceName() {
+
+    // Kalau sudah pernah tersimpan, pakai yang lama
+    if (
+    deviceName &&
+    deviceName !== "Perangkat VEIL"
+) {
+    return deviceName;
+}
+    let detectedName = "Perangkat VEIL";
+
+    try {
+
+        if (
+            navigator.userAgentData &&
+            navigator.userAgentData.getHighEntropyValues
+        ) {
+
+            const info =
+                await navigator.userAgentData.getHighEntropyValues([
+                    "model",
+                    "platform"
+                ]);
+
+            if (info.model) {
+
+                detectedName =
+                    info.model;
+
+            } else if (info.platform) {
+
+                detectedName =
+                    info.platform;
+
+            }
+
+        } else {
+
+            // Fallback untuk browser yang tidak mendukung userAgentData
+
+            const ua =
+                navigator.userAgent;
+
+            if (/Android/i.test(ua)) {
+
+                detectedName =
+                    "Perangkat Android";
+
+            } else if (/iPhone/i.test(ua)) {
+
+                detectedName =
+                    "iPhone";
+
+            } else if (/iPad/i.test(ua)) {
+
+                detectedName =
+                    "iPad";
+
             } else {
-                deviceId =
-                    "veil-" +
-                    Date.now() +
-                    "-" +
-                    Math.random().toString(36).substring(2, 12);
+
+                detectedName =
+                    "Perangkat VEIL";
+
             }
 
-            localStorage.setItem("veil_device_id", deviceId);
         }
 
-        // =====================================================
-        // NAMA / MODEL DEVICE
-        // =====================================================
-        let deviceName = localStorage.getItem("veil_device_name");
+    } catch (error) {
 
-        async function getDeviceName() {
-            // Jangan pakai nama generik lama jika browser bisa mendeteksi model.
-            if (deviceName && deviceName !== "Perangkat VEIL") {
-                return deviceName;
-            }
+        console.warn(
+            "Gagal mendeteksi model perangkat:",
+            error
+        );
 
-            let detectedName = "Perangkat VEIL";
+    }
 
-            try {
-                if (
-                    navigator.userAgentData &&
-                    navigator.userAgentData.getHighEntropyValues
-                ) {
-                    const info =
-                        await navigator.userAgentData.getHighEntropyValues([
-                            "model",
-                            "platform"
-                        ]);
+    deviceName =
+        detectedName;
 
-                    if (info.model) {
-                        detectedName = info.model;
-                    } else if (info.platform) {
-                        detectedName = info.platform;
-                    }
-                } else {
-                    const ua = navigator.userAgent;
+    localStorage.setItem(
+        "veil_device_name",
+        deviceName
+    );
 
-                    if (/Android/i.test(ua)) {
-                        detectedName = "Perangkat Android";
-                    } else if (/iPhone/i.test(ua)) {
-                        detectedName = "iPhone";
-                    } else if (/iPad/i.test(ua)) {
-                        detectedName = "iPad";
-                    }
-                }
-            } catch (error) {
-                console.warn(
-                    "Gagal mendeteksi model perangkat:",
-                    error
-                );
-            }
+    return deviceName;
+}
 
-            deviceName = detectedName;
 
-            localStorage.setItem(
-                "veil_device_name",
-                deviceName
-            );
+// =====================================================
+// INPUT KODE
+// =====================================================
 
-            return deviceName;
-        }
+codeInput.addEventListener(
+    "input",
+    function () {
 
-        // =====================================================
-        // INPUT KODE
-        // =====================================================
-        codeInput.addEventListener("input", function () {
-            this.value = this.value
+        this.value =
+            this.value
                 .replace(/\D/g, "")
                 .slice(0, 6);
-        });
 
-        // =====================================================
-        // REQUEST ID TERAKHIR
-        // =====================================================
-        let lastRequestId = null;
-        let locationRequestInterval = null;
+    }
+);
 
-        // =====================================================
-        // EMAIL FALLBACK
-        // =====================================================
-        function getPairingEmailFallback() {
-            return (
-                localStorage.getItem("veil_verified_email") ||
-                localStorage.getItem("veil_email") ||
-                ""
+
+// =====================================================
+// REQUEST ID TERAKHIR
+// =====================================================
+
+let lastRequestId = null;
+
+
+// =====================================================
+// PAIR DEVICE
+// =====================================================
+
+async function pairDevice() {
+
+    const code =
+        codeInput.value.trim();
+
+        const currentDeviceName =
+            await getDeviceName();
+
+
+    message.className = "";
+
+    message.textContent = "";
+
+    message.style.display = "none";
+
+
+    if (!/^\d{6}$/.test(code)) {
+
+        message.className =
+            "error";
+
+        message.textContent =
+            "Kode pairing harus terdiri dari 6 angka.";
+
+        return;
+    }
+
+
+    pairButton.disabled = true;
+
+    pairButton.textContent =
+        "MENGHUBUNGKAN...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${SERVER_URL}/api/pair-device`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            code:
+                                code,
+
+                            deviceId:
+                                deviceId,
+
+                            deviceName:
+                                currentDeviceName
+
+                        })
+                }
             );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+            message.className =
+                "error";
+
+            message.textContent =
+                result.message ||
+                "Kode pairing tidak valid.";
+
+            return;
         }
 
-        // =====================================================
-        // HUBUNGKAN PERANGKAT
-        // =====================================================
-        async function pairDevice() {
-            const code = codeInput.value.trim();
-            const currentDeviceName = await getDeviceName();
 
-            message.className = "";
-            message.textContent = "";
-            message.style.display = "none";
+        // =================================================
+        // SIMPAN IDENTITAS PAIRING
+        // =================================================
 
-            if (!/^\d{6}$/.test(code)) {
-                message.className = "error";
-                message.textContent =
-                    "Kode pairing harus terdiri dari 6 angka.";
-                return;
-            }
+        localStorage.setItem(
+            "veil_email",
+            result.email ||
+            getPairingEmailFallback()
+        );
 
-            pairButton.disabled = true;
-            pairButton.textContent = "MENGHUBUNGKAN...";
+        localStorage.setItem(
+            "veil_device_id",
+            deviceId
+        );
+
+        localStorage.setItem(
+            "veil_device_name",
+            currentDeviceName
+        );
+
+        deviceName =
+            currentDeviceName
+
+        // =================================================
+        // TAMPILAN BERHASIL
+        // =================================================
+
+        document.querySelector(".card").innerHTML = `
+
+            <div style="
+                text-align:center;
+                padding:20px 5px;
+            ">
+
+                <div style="
+                    width:80px;
+                    height:80px;
+                    margin:0 auto 20px;
+                    border-radius:50%;
+                    background:rgba(0,220,130,0.15);
+                    border:2px solid #54ffac;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    font-size:42px;
+                    color:#54ffac;
+                ">
+                    ✓
+                </div>
+
+                <h2 style="
+                    color:#54ffac;
+                    margin-bottom:15px;
+                ">
+                    Perangkat Berhasil Terhubung
+                </h2>
+
+                <div style="
+                    color:#b9c8dc;
+                    line-height:1.6;
+                    font-size:14px;
+                ">
+                    Perangkat ini sudah berhasil
+                    terhubung ke akun VEIL.
+                    <br><br>
+                    Halaman ini akan tetap aktif
+                    untuk menerima permintaan lokasi.
+                </div>
+
+                <div id="locationStatus"
+                    style="
+                        margin-top:20px;
+                        padding:12px;
+                        border-radius:10px;
+                        background:rgba(0,0,0,0.20);
+                        color:#ffffff;
+                        font-size:13px;
+                        line-height:1.6;
+                    "
+                >
+                    📍 Menyiapkan GPS...
+                </div>
+
+                <div style="
+                    margin-top:20px;
+                    padding:12px;
+                    border-radius:10px;
+                    background:rgba(0,0,0,0.20);
+                    color:#80bfff;
+                    font-size:13px;
+                ">
+                    ${deviceName}
+                </div>
+
+            </div>
+
+        `;
+
+
+        // =================================================
+        // KIRIM LOKASI PERTAMA
+        // =================================================
+
+        sendCurrentLocation();
+
+
+        // =================================================
+        // MULAI MENUNGGU REQUEST LOKASI
+        // =================================================
+
+        startLocationRequestListener();
+
+        // Mulai menerima Lost Mode dan Pesan
+        startLostModeListener();
+        startMessageListener();
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "VEIL pairing error:",
+            error
+        );
+
+        message.className =
+            "error";
+
+        message.textContent =
+            "Server VEIL tidak dapat dihubungi.";
+
+    }
+
+    finally {
+
+        pairButton.disabled =
+            false;
+
+        pairButton.textContent =
+            "HUBUNGKAN";
+
+    }
+
+}
+
+
+// =====================================================
+// FALLBACK EMAIL
+// =====================================================
+//
+// Catatan:
+// Endpoint /api/pair-device yang sekarang lu kirim
+// BELUM mengembalikan result.email.
+//
+// Jadi untuk penyimpanan email yang benar,
+// kita perlu response server mengembalikan email.
+//
+// Fungsi ini hanya fallback sementara.
+//
+
+function getPairingEmailFallback() {
+
+    return localStorage.getItem(
+        "veil_email"
+    ) || "";
+
+}
+
+
+// =====================================================
+// KIRIM GPS SEKARANG
+// =====================================================
+
+function sendCurrentLocation() {
+
+    if (!navigator.geolocation) {
+
+        updateLocationStatus(
+            "❌ Browser tidak mendukung GPS."
+        );
+
+        return;
+
+    }
+
+
+    updateLocationStatus(
+        "📍 Meminta izin lokasi..."
+    );
+
+
+    navigator.geolocation.getCurrentPosition(
+
+        async function(position) {
+
+            const latitude =
+                position.coords.latitude;
+
+            const longitude =
+                position.coords.longitude;
+
+            const accuracy =
+                position.coords.accuracy;
+
+
+            updateLocationStatus(
+                "📍 Lokasi ditemukan. Mengirim..."
+            );
+
 
             try {
-                const response = await fetch(
-                    `${SERVER_URL}/api/pair-device`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            code: code,
-                            deviceId: deviceId,
-                            deviceName: currentDeviceName
-                        })
-                    }
-                );
 
-                const result = await response.json();
+                const email =
+                    localStorage.getItem(
+                        "veil_email"
+                    );
 
-                if (!response.ok || !result.success) {
-                    message.className = "error";
-                    message.textContent =
-                        result.message ||
-                        "Kode pairing tidak valid.";
+
+                if (!email) {
+
+                    updateLocationStatus(
+                        "⚠️ Email perangkat belum tersimpan."
+                    );
+
                     return;
                 }
 
-                console.log("VEIL pairing berhasil:", result);
 
-                // =================================================
-                // SIMPAN IDENTITAS PAIRING
-                // =================================================
-                const pairedEmail =
-                    result.email || getPairingEmailFallback();
+                const response =
+                    await fetch(
+                        `${SERVER_URL}/api/update-location`,
+                        {
+                            method: "POST",
 
-                if (pairedEmail) {
-                    localStorage.setItem(
-                        "veil_email",
-                        pairedEmail
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify({
+
+                                    email:
+                                        email,
+
+                                    deviceId:
+                                        deviceId,
+
+                                    latitude:
+                                        latitude,
+
+                                    longitude:
+                                        longitude,
+
+                                    accuracy:
+                                        accuracy
+
+                                })
+                        }
                     );
-                }
 
-                localStorage.setItem(
-                    "veil_device_id",
-                    deviceId
-                );
 
-                localStorage.setItem(
-                    "veil_device_name",
-                    currentDeviceName
-                );
+                const result =
+                    await response.json();
 
-                deviceName = currentDeviceName;
 
-                // =================================================
-                // TAMPILAN BERHASIL
-                // =================================================
-                document.querySelector(".card").innerHTML = `
-                    <div class="device-success">
-                        <div class="success-icon">✓</div>
-
-                        <h2>
-                            Perangkat Berhasil Terhubung
-                        </h2>
-
-                        <div class="device-info">
-                            Perangkat ini sudah berhasil
-                            terhubung ke akun VEIL.
-                            <br><br>
-                            Halaman ini harus tetap aktif
-                            agar dapat menerima permintaan lokasi
-                            dan perintah Lost Mode.
-                        </div>
-
-                        <div id="locationStatus" class="location-status">
-                            📍 Menyiapkan GPS...
-                        </div>
-
-                        <div class="device-name">
-                            ${escapeHtml(deviceName)}
-                        </div>
-
-                        <a href="index.html" class="finish-link">
-                            SELESAI
-                        </a>
-                    </div>
-                `;
-
-                // =================================================
-                // MULAI FITUR DEVICE
-                // =================================================
-                sendCurrentLocation();
-                startLocationRequestListener();
-                startLostModeListener();
-            } catch (error) {
-                console.error("VEIL pairing error:", error);
-
-                message.className = "error";
-                message.textContent =
-                    "Server VEIL tidak dapat dihubungi.";
-            } finally {
-                // Setelah berhasil, tombol sudah hilang karena card diganti.
-                if (document.body.contains(pairButton)) {
-                    pairButton.disabled = false;
-                    pairButton.textContent = "HUBUNGKAN";
-                }
-            }
-        }
-
-        // =====================================================
-        // ESCAPE HTML
-        // =====================================================
-        function escapeHtml(value) {
-            return String(value)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
-        // =====================================================
-        // STATUS GPS
-        // =====================================================
-        function updateLocationStatus(text) {
-            const element =
-                document.getElementById("locationStatus");
-
-            if (element) {
-                element.innerHTML = text;
-            }
-        }
-
-        // =====================================================
-        // KIRIM GPS SEKARANG
-        // =====================================================
-        function sendCurrentLocation() {
-            if (!navigator.geolocation) {
-                updateLocationStatus(
-                    "❌ Browser tidak mendukung GPS."
-                );
-                return;
-            }
-
-            updateLocationStatus(
-                "📍 Meminta izin lokasi..."
-            );
-
-            navigator.geolocation.getCurrentPosition(
-                async function (position) {
-                    const latitude = position.coords.latitude;
-                    const longitude = position.coords.longitude;
-                    const accuracy = position.coords.accuracy;
+                if (
+                    !response.ok ||
+                    !result.success
+                ) {
 
                     updateLocationStatus(
-                        "📍 Lokasi ditemukan. Mengirim..."
+                        "❌ Gagal mengirim lokasi."
                     );
 
+                    console.error(
+                        result
+                    );
+
+                    return;
+                }
+
+
+                updateLocationStatus(
+
+                    "🟢 Lokasi berhasil dikirim." +
+                    "<br><br>" +
+
+                    "Akurasi: ±" +
+                    Math.round(accuracy) +
+                    " meter"
+
+                );
+
+
+                console.log(
+                    "VEIL LOCATION UPDATE:",
+                    result
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Location update error:",
+                    error
+                );
+
+                updateLocationStatus(
+                    "❌ Gagal terhubung ke server."
+                );
+
+            }
+
+        },
+
+
+        function(error) {
+
+            console.error(
+                "VEIL GPS ERROR:",
+                error
+            );
+
+
+            updateLocationStatus(
+
+                "⚠️ Izin GPS gagal: " +
+                error.message
+
+            );
+
+        },
+
+
+        {
+            enableHighAccuracy: true,
+
+            timeout: 15000,
+
+            maximumAge: 0
+
+        }
+
+    );
+
+}
+
+
+// =====================================================
+// CEK REQUEST LOKASI
+// =====================================================
+
+async function checkLocationRequest() {
+
+    const email =
+        localStorage.getItem(
+            "veil_email"
+        );
+
+
+    const savedDeviceId =
+        localStorage.getItem(
+            "veil_device_id"
+        );
+
+
+    if (
+        !email ||
+        !savedDeviceId
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${SERVER_URL}/api/location-request`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            email:
+                                email,
+
+                            deviceId:
+                                savedDeviceId
+
+                        })
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+            return;
+
+        }
+
+
+        if (!result.request) {
+
+            return;
+
+        }
+
+
+        const request =
+            result.request;
+
+
+        // Jangan proses request yang sama
+        // berulang-ulang
+
+        if (
+            request.requestId ===
+            lastRequestId
+        ) {
+
+            return;
+
+        }
+
+
+        lastRequestId =
+            request.requestId;
+
+
+        console.log(
+            "VEIL: request lokasi diterima",
+            request.requestId
+        );
+
+
+        // =================================================
+        // OTOMATIS AMBIL GPS
+        // =================================================
+
+        updateLocationStatus(
+            "📍 Permintaan lokasi diterima. Mengambil GPS..."
+        );
+
+
+        sendCurrentLocation();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "VEIL request location error:",
+            error
+        );
+
+    }
+
+}
+
+
+// =====================================================
+// LISTENER REQUEST
+// =====================================================
+
+function startLocationRequestListener() {
+
+    // langsung cek
+
+    checkLocationRequest();
+
+
+    // lalu cek setiap 3 detik
+
+    setInterval(
+        checkLocationRequest,
+        3000
+    );
+
+}
+
+
+// =====================================================
+// STATUS GPS
+// =====================================================
+
+function updateLocationStatus(text) {
+
+    const element =
+        document.getElementById(
+            "locationStatus"
+        );
+
+
+    if (element) {
+
+        element.innerHTML =
+            text;
+
+    }
+
+}
+
+
+// ==========================================
+// CEK PERMINTAAN LOKASI DARI DASHBOARD
+// ==========================================
+
+setInterval(async function () {
+
+    const email =
+        localStorage.getItem("veil_email");
+
+    const savedDeviceId =
+        localStorage.getItem("veil_device_id");
+
+
+    if (!email || !savedDeviceId) {
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${SERVER_URL}/api/location-request`,
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        email: email,
+
+                        deviceId:
+                            savedDeviceId
+
+                    })
+
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        console.log(
+            "VEIL LOCATION REQUEST CHECK:",
+            result
+        );
+
+
+        if (
+            result.success === true &&
+            result.request
+        ) {
+
+            console.log(
+                "VEIL: Permintaan GPS diterima."
+            );
+
+
+            navigator.geolocation.getCurrentPosition(
+
+                async function(position) {
+
+                    const latitude =
+                        position.coords.latitude;
+
+                    const longitude =
+                        position.coords.longitude;
+
+                    const accuracy =
+                        position.coords.accuracy;
+
+
                     try {
-                        const email =
-                            localStorage.getItem("veil_email") ||
-                            localStorage.getItem("veil_verified_email");
 
-                        if (!email) {
-                            updateLocationStatus(
-                                "⚠️ Email perangkat belum tersimpan."
+                        const locationResponse =
+                            await fetch(
+                                `${SERVER_URL}/api/update-location`,
+                                {
+
+                                    method: "POST",
+
+                                    headers: {
+                                        "Content-Type":
+                                            "application/json"
+                                    },
+
+                                    body: JSON.stringify({
+
+                                        email: email,
+
+                                        deviceId:
+                                            savedDeviceId,
+
+                                        latitude:
+                                            latitude,
+
+                                        longitude:
+                                            longitude,
+
+                                        accuracy:
+                                            accuracy
+
+                                    })
+
+                                }
                             );
-                            return;
-                        }
 
-                        const response = await fetch(
-                            `${SERVER_URL}/api/update-location`,
-                            {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json"
-                                },
-                                body: JSON.stringify({
-                                    email: email,
-                                    deviceId: deviceId,
-                                    latitude: latitude,
-                                    longitude: longitude,
-                                    accuracy: accuracy
-                                })
-                            }
-                        );
 
-                        const result = await response.json();
+                        const locationResult =
+                            await locationResponse.json();
 
-                        if (!response.ok || !result.success) {
-                            updateLocationStatus(
-                                "❌ Gagal mengirim lokasi."
-                            );
-                            console.error(
-                                "VEIL location update:",
-                                result
-                            );
-                            return;
-                        }
-
-                        updateLocationStatus(
-                            "🟢 Lokasi berhasil dikirim." +
-                            "<br><br>Akurasi: ±" +
-                            Math.round(accuracy) +
-                            " meter"
-                        );
 
                         console.log(
-                            "VEIL LOCATION UPDATE:",
-                            result
+                            "VEIL LOCATION SENT:",
+                            locationResult
                         );
+
+
                     } catch (error) {
+
                         console.error(
-                            "Location update error:",
+                            "VEIL SEND LOCATION ERROR:",
                             error
                         );
 
-                        updateLocationStatus(
-                            "❌ Gagal terhubung ke server."
-                        );
                     }
+
                 },
-                function (error) {
+
+
+                function(error) {
+
                     console.error(
                         "VEIL GPS ERROR:",
                         error
                     );
 
-                    updateLocationStatus(
-                        "⚠️ Izin GPS gagal: " +
-                        error.message
-                    );
                 },
+
+
                 {
                     enableHighAccuracy: true,
                     timeout: 15000,
                     maximumAge: 0
                 }
+
             );
+
         }
 
-        // =====================================================
-        // CEK REQUEST LOKASI DARI DASHBOARD
-        // =====================================================
-        async function checkLocationRequest() {
-            const email =
-                localStorage.getItem("veil_email") ||
-                localStorage.getItem("veil_verified_email");
 
-            if (!email || !deviceId) {
-                return;
-            }
+    } catch (error) {
 
-            try {
-                const response = await fetch(
-                    `${SERVER_URL}/api/location-request`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            email: email,
-                            deviceId: deviceId
-                        })
-                    }
-                );
+        console.error(
+            "VEIL REQUEST CHECK ERROR:",
+            error
+        );
 
-                const result = await response.json();
+    }
 
-                if (!response.ok || !result.success) {
-                    return;
-                }
+}, 3000);
 
-                if (
-                    result.request &&
-                    result.request.requestId &&
-                    result.request.requestId !== lastRequestId
-                ) {
-                    lastRequestId =
-                        result.request.requestId;
 
-                    console.log(
-                        "VEIL: Request lokasi diterima",
-                        result.request
-                    );
 
-                    sendCurrentLocation();
-                }
-            } catch (error) {
-                console.error(
-                    "VEIL location request error:",
-                    error
-                );
-            }
+// =====================================================
+// LOST MODE - CEK STATUS
+// =====================================================
+
+let lastLostModeState = null;
+let lostModeInterval = null;
+
+async function checkLostModeStatus() {
+
+    const email = localStorage.getItem("veil_email");
+    const savedDeviceId = localStorage.getItem("veil_device_id");
+
+    if (!email || !savedDeviceId) return;
+
+    try {
+        const response = await fetch(`${SERVER_URL}/api/lost-mode-status`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                email,
+                deviceId: savedDeviceId
+            })
+        });
+
+        const result = await response.json();
+        if (!response.ok || result.success !== true) return;
+
+        const lostMode = result.lostMode === true;
+
+        if (lostMode === lastLostModeState) return;
+        lastLostModeState = lostMode;
+
+        if (lostMode) {
+            showLostModeScreen();
+        } else {
+            hideLostModeScreen();
         }
 
-        // =====================================================
-        // LISTENER REQUEST LOKASI
-        // =====================================================
-        function startLocationRequestListener() {
-            if (locationRequestInterval) {
-                clearInterval(locationRequestInterval);
+    } catch (error) {
+        console.error("VEIL LOST MODE CHECK ERROR:", error);
+    }
+}
+
+function showLostModeScreen() {
+
+    if (document.getElementById("veilLostModeOverlay")) return;
+
+    const overlay = document.createElement("div");
+    overlay.id = "veilLostModeOverlay";
+
+    overlay.innerHTML = `
+        <div style="width:100%;max-width:420px;text-align:center;padding:30px;box-sizing:border-box;">
+            <div style="width:90px;height:90px;margin:0 auto 25px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:45px;">
+                🔒
+            </div>
+            <h1 style="margin:0 0 15px;font-size:28px;color:#fff;">VEIL</h1>
+            <h2 style="margin:0 0 15px;font-size:20px;color:#fff;">Lost Mode</h2>
+            <p style="margin:0;color:#cbd5e1;line-height:1.6;font-size:14px;">
+                Perangkat ini sedang dalam mode kehilangan.
+            </p>
+            <div style="margin-top:25px;padding:15px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:13px;">
+                🔐 Perangkat dilindungi VEIL
+            </div>
+        </div>
+    `;
+
+    Object.assign(overlay.style, {
+        position: "fixed",
+        inset: "0",
+        zIndex: "999999",
+        background: "#080d16",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: "Arial, sans-serif"
+    });
+
+    document.body.appendChild(overlay);
+}
+
+function hideLostModeScreen() {
+    const overlay = document.getElementById("veilLostModeOverlay");
+    if (overlay) overlay.remove();
+}
+
+function startLostModeListener() {
+    if (lostModeInterval) clearInterval(lostModeInterval);
+    checkLostModeStatus();
+    lostModeInterval = setInterval(checkLostModeStatus, 3000);
+}
+
+// =====================================================
+// PESAN - TERIMA TULISAN + SUARA
+// =====================================================
+
+let lastMessageId = null;
+let messageInterval = null;
+
+async function checkMessageRequest() {
+
+    const email = localStorage.getItem("veil_email");
+    const savedDeviceId = localStorage.getItem("veil_device_id");
+
+    if (!email || !savedDeviceId) return;
+
+    try {
+        const response = await fetch(`${SERVER_URL}/api/message-request`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                email,
+                deviceId: savedDeviceId
+            })
+        });
+
+        const result = await response.json();
+        if (!response.ok || result.success !== true || !result.request) return;
+
+        const request = result.request;
+        if (request.messageId === lastMessageId) return;
+        lastMessageId = request.messageId;
+
+        showIncomingMessage(request);
+
+    } catch (error) {
+        console.error("VEIL MESSAGE CHECK ERROR:", error);
+    }
+}
+
+function showIncomingMessage(request) {
+
+    const old = document.getElementById("veilMessageOverlay");
+    if (old) old.remove();
+
+    const overlay = document.createElement("div");
+    overlay.id = "veilMessageOverlay";
+
+    const text = String(request.text || "");
+    const hasAudio = Boolean(request.audioDataUrl);
+
+    overlay.innerHTML = `
+        <div style="width:92%;max-width:430px;text-align:center;padding:26px;box-sizing:border-box;">
+            <div style="font-size:52px;margin-bottom:15px;">🔊</div>
+            <div style="font-size:13px;color:#80bfff;letter-spacing:2px;margin-bottom:10px;">VEIL MESSAGE</div>
+            <div style="font-size:24px;font-weight:bold;color:#fff;line-height:1.45;white-space:pre-wrap;word-break:break-word;">
+                ${escapeMessageHtml(text || "Pesan suara dari VEIL")}
+            </div>
+
+            <button id="veilPlayMessage" style="margin-top:24px;width:100%;height:50px;border:0;border-radius:12px;background:#1683ff;color:#fff;font-weight:bold;font-size:15px;">
+                🔊 ${hasAudio ? "PUTAR SUARA" : "BACA PESAN"}
+            </button>
+
+            <button id="veilCloseMessage" style="margin-top:10px;width:100%;height:44px;border:1px solid #334155;border-radius:12px;background:#151d29;color:#cbd5e1;font-weight:bold;">
+                TUTUP
+            </button>
+        </div>
+    `;
+
+    Object.assign(overlay.style, {
+        position: "fixed",
+        inset: "0",
+        zIndex: "999998",
+        background: "#080d16",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: "Arial, sans-serif"
+    });
+
+    document.body.appendChild(overlay);
+
+    const playButton = document.getElementById("veilPlayMessage");
+
+    playButton.onclick = async function() {
+        try {
+            if (request.audioDataUrl) {
+                const audio = new Audio(request.audioDataUrl);
+                audio.volume = 1;
+                await audio.play();
+            } else if (text && "speechSynthesis" in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = "id-ID";
+                utterance.rate = 1;
+                utterance.pitch = 1;
+                window.speechSynthesis.speak(utterance);
             }
-
-            checkLocationRequest();
-
-            locationRequestInterval = setInterval(
-                checkLocationRequest,
-                3000
-            );
+        } catch (error) {
+            console.error("VEIL PLAY MESSAGE ERROR:", error);
+            playButton.textContent = "⚠️ Tekan lagi untuk memutar";
         }
+    };
 
-        // =====================================================
-        // LOST MODE - STATUS DARI SERVER
-        // =====================================================
-        let lastLostModeState = null;
-        let lostModeInterval = null;
+    document.getElementById("veilCloseMessage").onclick = function() {
+        if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+        overlay.remove();
+    };
 
-        async function checkLostModeStatus() {
-            const email =
-                localStorage.getItem("veil_email") ||
-                localStorage.getItem("veil_verified_email");
-
-            const savedDeviceId =
-                localStorage.getItem("veil_device_id");
-
-            if (!email || !savedDeviceId) {
-                return;
-            }
-
-            try {
-                const response = await fetch(
-                    `${SERVER_URL}/api/lost-mode-status`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            email: email,
-                            deviceId: savedDeviceId
-                        })
-                    }
-                );
-
-                const result = await response.json();
-
-                console.log(
-                    "VEIL LOST MODE STATUS:",
-                    result
-                );
-
-                if (!response.ok || result.success !== true) {
-                    return;
-                }
-
-                const lostMode = result.lostMode === true;
-
-                // Tidak perlu melakukan apa-apa kalau status sama.
-                if (lostMode === lastLostModeState) {
-                    return;
-                }
-
-                lastLostModeState = lostMode;
-
-                if (lostMode) {
-                    showLostModeScreen();
-                } else {
-                    hideLostModeScreen();
-                }
-            } catch (error) {
-                console.error(
-                    "VEIL LOST MODE CHECK ERROR:",
-                    error
-                );
-            }
+    // Coba putar otomatis. Browser boleh memblokir autoplay; tombol tetap tersedia.
+    if (request.audioDataUrl) {
+        const autoAudio = new Audio(request.audioDataUrl);
+        autoAudio.volume = 1;
+        autoAudio.play().catch(() => {
+            playButton.textContent = "🔊 PUTAR SUARA";
+        });
+    } else if (text && "speechSynthesis" in window) {
+        try {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "id-ID";
+            utterance.rate = 1;
+            window.speechSynthesis.speak(utterance);
+        } catch (error) {
+            console.warn("VEIL TTS gagal:", error);
         }
+    }
+}
 
-        // =====================================================
-        // TAMPILKAN LOCK SCREEN VEIL
-        // =====================================================
-        function showLostModeScreen() {
-            let overlay =
-                document.getElementById("veilLostModeOverlay");
+function escapeMessageHtml(value) {
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
-            if (overlay) {
-                return;
-            }
+function startMessageListener() {
+    if (messageInterval) clearInterval(messageInterval);
+    checkMessageRequest();
+    messageInterval = setInterval(checkMessageRequest, 3000);
+}
 
-            overlay = document.createElement("div");
-            overlay.id = "veilLostModeOverlay";
+</script>
 
-            overlay.innerHTML = `
-                <div class="lost-mode-content">
-                    <div class="lost-mode-lock">
-                        🔒
-                    </div>
-
-                    <h1>VEIL</h1>
-
-                    <h2>Lost Mode</h2>
-
-                    <p>
-                        Perangkat ini sedang dalam
-                        mode kehilangan.
-                    </p>
-
-                    <div class="lost-mode-badge">
-                        🔐 Perangkat dilindungi VEIL
-                    </div>
-                </div>
-            `;
-
-            document.body.appendChild(overlay);
-
-            console.log(
-                "🔒 VEIL LOST MODE AKTIF"
-            );
-        }
-
-        // =====================================================
-        // HILANGKAN LOCK SCREEN VEIL
-        // =====================================================
-        function hideLostModeScreen() {
-            const overlay =
-                document.getElementById("veilLostModeOverlay");
-
-            if (overlay) {
-                overlay.remove();
-            }
-
-            console.log(
-                "🔓 VEIL LOST MODE NONAKTIF"
-            );
-        }
-
-        // =====================================================
-        // MULAI CEK LOST MODE
-        // =====================================================
-        function startLostModeListener() {
-            if (lostModeInterval) {
-                clearInterval(lostModeInterval);
-            }
-
-            checkLostModeStatus();
-
-            lostModeInterval = setInterval(
-                checkLostModeStatus,
-                3000
-            );
-        }
-    </script>
 </body>
+
 </html>

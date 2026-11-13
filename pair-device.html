@@ -1336,179 +1336,392 @@ function startLostModeListener() {
 }
 
 // =====================================================
-// PESAN - TERIMA TULISAN + SUARA
+// VEIL MESSAGE QUEUE
 // =====================================================
 
-let lastMessageId = null;
 let messageInterval = null;
+let messageCheckInProgress = false;
+let isProcessingIncomingMessage = false;
+
+const incomingMessageQueue = [];
+const seenMessageIds = new Set();
+
+let activeMessageAudio = null;
+let activeMessageOverlay = null;
+let activeMessageFinish = null;
+
+
+// =====================================================
+// CEK PESAN DARI SERVER
+// =====================================================
 
 async function checkMessageRequest() {
 
-    const email = localStorage.getItem("veil_email");
-    const savedDeviceId = localStorage.getItem("veil_device_id");
+    if (messageCheckInProgress) return;
 
-    if (!email || !savedDeviceId) return;
+    const email = localStorage.getItem("veil_email");
+    const deviceId = localStorage.getItem("veil_device_id");
+
+    if (!email || !deviceId) return;
+
+    messageCheckInProgress = true;
 
     try {
-        const response = await fetch(`${SERVER_URL}/api/message-request`, {
+
+        const response = await fetch("/api/message-request", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify({
                 email,
-                deviceId: savedDeviceId
+                deviceId
             })
         });
 
         const result = await response.json();
-        if (!response.ok || result.success !== true || !result.request) return;
+
+        if (!response.ok || !result.success || !result.request) {
+            return;
+        }
 
         const request = result.request;
 
-        if (request.requestId === lastMessageId) return;
-        lastMessageId = request.requestId;
+        if (!request.requestId) {
+            console.warn("VEIL: ID pesan tidak ditemukan.");
+            return;
+        }
 
-        showIncomingMessage(request);
+        if (seenMessageIds.has(request.requestId)) {
+            return;
+        }
+
+        seenMessageIds.add(request.requestId);
+
+        // Batasi penyimpanan ID agar tidak terus membesar.
+        if (seenMessageIds.size > 100) {
+            const oldestId = seenMessageIds.values().next().value;
+            seenMessageIds.delete(oldestId);
+        }
+
+        // Masukkan pesan ke antrean.
+        incomingMessageQueue.push(request);
+
+        console.log(
+            "VEIL: Pesan masuk antrean:",
+            request.requestId,
+            "Jumlah antrean:",
+            incomingMessageQueue.length
+        );
+
+        processIncomingMessageQueue();
 
     } catch (error) {
+
         console.error("VEIL MESSAGE CHECK ERROR:", error);
+
+    } finally {
+
+        messageCheckInProgress = false;
+
     }
 }
+
+
+// =====================================================
+// PROSES ANTREAN PESAN
+// =====================================================
+
+async function processIncomingMessageQueue() {
+
+    if (isProcessingIncomingMessage) return;
+
+    isProcessingIncomingMessage = true;
+
+    try {
+
+        while (incomingMessageQueue.length > 0) {
+
+            const request = incomingMessageQueue.shift();
+
+            await showIncomingMessage(request);
+
+        }
+
+    } catch (error) {
+
+        console.error("VEIL QUEUE ERROR:", error);
+
+    } finally {
+
+        isProcessingIncomingMessage = false;
+
+    }
+
+}
+
+
+// =====================================================
+// TAMPILKAN DAN PUTAR PESAN
+// =====================================================
 
 function showIncomingMessage(request) {
 
-    const old = document.getElementById("veilMessageOverlay");
-    if (old) old.remove();
+    return new Promise((resolve) => {
 
-    const overlay = document.createElement("div");
-    overlay.id = "veilMessageOverlay";
+        let finished = false;
+        let fallbackTimer = null;
 
-    const text = String(request.text || "");
-    const hasAudio = Boolean(request.audioDataUrl);
+        const text = String(request.text || "");
+        const hasAudio = Boolean(request.audioDataUrl);
 
-    overlay.innerHTML = `
-        <div style="
-            width:92%;
-            max-width:430px;
-            text-align:center;
-            padding:26px;
-            box-sizing:border-box;
-        ">
-            <div style="font-size:52px;margin-bottom:15px;">🔊</div>
+        const overlay = document.createElement("div");
+        overlay.id = "veilMessageOverlay";
 
+        overlay.innerHTML = `
             <div style="
-                font-size:13px;
-                color:#80bfff;
-                letter-spacing:2px;
-                margin-bottom:10px;
+                width:92%;
+                max-width:430px;
+                text-align:center;
+                padding:26px;
+                box-sizing:border-box;
             ">
-                VEIL MESSAGE
+
+                <div style="font-size:52px;margin-bottom:15px;">
+                    🔊
+                </div>
+
+                <div style="
+                    font-size:13px;
+                    color:#80bfff;
+                    letter-spacing:2px;
+                    margin-bottom:10px;
+                ">
+                    VEIL MESSAGE
+                </div>
+
+                <div style="
+                    font-size:24px;
+                    font-weight:bold;
+                    color:#fff;
+                    line-height:1.45;
+                    white-space:pre-wrap;
+                    word-break:break-word;
+                ">
+                    ${escapeMessageHtml(text || "Pesan suara dari VEIL")}
+                </div>
+
+                <div id="veilMessageStatus" style="
+                    margin-top:20px;
+                    color:#80bfff;
+                    font-size:13px;
+                ">
+                    ${hasAudio ? "🔊 Menyiapkan suara..." : "🔊 Membacakan pesan..."}
+                </div>
+
+                <button id="veilCloseMessage" style="
+                    margin-top:20px;
+                    width:100%;
+                    height:44px;
+                    border:1px solid #334155;
+                    border-radius:12px;
+                    background:#151d29;
+                    color:#cbd5e1;
+                    font-weight:bold;
+                ">
+                    TUTUP
+                </button>
+
             </div>
+        `;
 
-            <div style="
-                font-size:24px;
-                font-weight:bold;
-                color:#fff;
-                line-height:1.45;
-                white-space:pre-wrap;
-                word-break:break-word;
-            ">
-                ${escapeMessageHtml(text || "Pesan suara dari VEIL")}
-            </div>
-
-            <div id="veilMessageStatus" style="
-                margin-top:20px;
-                color:#80bfff;
-                font-size:13px;
-            ">
-                ${hasAudio ? "🔊 Memutar suara..." : "🔊 Membacakan pesan..."}
-            </div>
-
-            <button id="veilCloseMessage" style="
-                margin-top:20px;
-                width:100%;
-                height:44px;
-                border:1px solid #334155;
-                border-radius:12px;
-                background:#151d29;
-                color:#cbd5e1;
-                font-weight:bold;
-            ">
-                TUTUP
-            </button>
-        </div>
-    `;
-
-    Object.assign(overlay.style, {
-        position: "fixed",
-        inset: "0",
-        zIndex: "999998",
-        background: "#080d16",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontFamily: "Arial, sans-serif"
-    });
-
-    document.body.appendChild(overlay);
-
-    let audio = null;
-
-    document.getElementById("veilCloseMessage").onclick = function() {
-        if (audio) {
-            audio.pause();
-            audio = null;
-        }
-
-        if ("speechSynthesis" in window) {
-            window.speechSynthesis.cancel();
-        }
-
-        overlay.remove();
-    };
-
-    // PUTAR AUDIO OTOMATIS
-    if (hasAudio) {
-
-        audio = new Audio(request.audioDataUrl);
-        audio.volume = 1;
-
-        audio.play().then(() => {
-            document.getElementById("veilMessageStatus").textContent =
-                "🔊 Suara sedang diputar";
-        }).catch(error => {
-            console.warn("Autoplay diblokir browser:", error);
-
-            document.getElementById("veilMessageStatus").textContent =
-                "⚠️ Browser memblokir pemutaran otomatis";
+        Object.assign(overlay.style, {
+            position: "fixed",
+            inset: "0",
+            zIndex: "999998",
+            background: "#080d16",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontFamily: "Arial, sans-serif"
         });
 
-    }
+        document.body.appendChild(overlay);
 
-    // BACA TEKS OTOMATIS
-    else if (text && "speechSynthesis" in window) {
+        activeMessageOverlay = overlay;
 
-        window.speechSynthesis.cancel();
+        const status = overlay.querySelector("#veilMessageStatus");
 
-        const utterance = new SpeechSynthesisUtterance(text);
+        // Selesaikan pesan dan lanjutkan antrean.
+        function finishMessage() {
 
-        utterance.lang = "id-ID";
-        utterance.rate = 1;
-        utterance.pitch = 1;
+            if (finished) return;
 
-        window.speechSynthesis.speak(utterance);
+            finished = true;
 
-    }
+            if (fallbackTimer) {
+                clearTimeout(fallbackTimer);
+            }
+
+            if (activeMessageAudio) {
+
+                activeMessageAudio.onended = null;
+                activeMessageAudio.onerror = null;
+                activeMessageAudio.pause();
+
+                activeMessageAudio = null;
+
+            }
+
+            if ("speechSynthesis" in window) {
+                window.speechSynthesis.cancel();
+            }
+
+            if (overlay.parentNode) {
+                overlay.remove();
+            }
+
+            activeMessageOverlay = null;
+            activeMessageFinish = null;
+
+            resolve();
+
+        }
+
+        activeMessageFinish = finishMessage;
+
+        overlay.querySelector("#veilCloseMessage").onclick = finishMessage;
+
+
+        // =================================================
+        // PUTAR AUDIO
+        // =================================================
+
+        if (hasAudio) {
+
+            const audio = new Audio(request.audioDataUrl);
+
+            audio.volume = 1;
+
+            activeMessageAudio = audio;
+
+            audio.onended = finishMessage;
+
+            audio.onerror = function() {
+
+                status.textContent =
+                    "⚠️ Audio gagal diputar.";
+
+                fallbackTimer = setTimeout(
+                    finishMessage,
+                    5000
+                );
+
+            };
+
+            audio.play().then(() => {
+
+                status.textContent =
+                    "🔊 Suara sedang diputar";
+
+            }).catch(error => {
+
+                console.warn(
+                    "VEIL AUTOPLAY ERROR:",
+                    error
+                );
+
+                status.textContent =
+                    "⚠️ Browser memblokir autoplay. Pesan dilewati.";
+
+                fallbackTimer = setTimeout(
+                    finishMessage,
+                    6000
+                );
+
+            });
+
+        }
+
+
+        // =================================================
+        // BACA TEKS
+        // =================================================
+
+        else if (text && "speechSynthesis" in window) {
+
+            const utterance =
+                new SpeechSynthesisUtterance(text);
+
+            utterance.lang = "id-ID";
+            utterance.rate = 1;
+            utterance.pitch = 1;
+
+            utterance.onend = finishMessage;
+
+            utterance.onerror = function() {
+
+                status.textContent =
+                    "⚠️ Pembacaan pesan gagal.";
+
+                fallbackTimer = setTimeout(
+                    finishMessage,
+                    4000
+                );
+
+            };
+
+            window.speechSynthesis.speak(utterance);
+
+            // Pengaman jika browser tidak mengirim event selesai.
+            fallbackTimer = setTimeout(
+                finishMessage,
+                Math.max(8000, Math.min(30000, text.length * 120))
+            );
+
+        }
+
+
+        // =================================================
+        // FALLBACK
+        // =================================================
+
+        else {
+
+            status.textContent =
+                "Pesan ditampilkan.";
+
+            fallbackTimer = setTimeout(
+                finishMessage,
+                6000
+            );
+
+        }
+
+    });
 
 }
 
+
+// =====================================================
+// AMANKAN TAMPILAN TEKS
+// =====================================================
+
 function escapeMessageHtml(value) {
+
     return String(value || "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+
 }
+
+
+// =====================================================
+// MULAI MENDENGARKAN PESAN
+// =====================================================
 
 function startMessageListener() {
 
@@ -1518,14 +1731,14 @@ function startMessageListener() {
 
     checkMessageRequest();
 
-    messageInterval = setInterval(() => {
-        checkMessageRequest();
-    }, 3000);
+    messageInterval = setInterval(
+        checkMessageRequest,
+        3000
+    );
 
 }
 
 </script>
 
 </body>
-
 </html>

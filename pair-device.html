@@ -1251,7 +1251,7 @@ setInterval(async function () {
 let lastLostModeState = null;
 let lostModeInterval = null;
 
-async function checkLostModeStatus() {
+async function ModeStatus() {
 
     const email = localStorage.getItem("veil_email");
     const savedDeviceId = localStorage.getItem("veil_device_id");
@@ -1277,7 +1277,7 @@ async function checkLostModeStatus() {
         lastLostModeState = lostMode;
 
         if (lostMode) {
-            showLostModeScreen();
+            showLostModeScreen(result.lostMessage || "");
         } else {
             hideLostModeScreen();
         }
@@ -1287,7 +1287,7 @@ async function checkLostModeStatus() {
     }
 }
 
-function showLostModeScreen() {
+function showLostModeScreen(lostMessage = "") {
 
     if (document.getElementById("veilLostModeOverlay")) return;
 
@@ -1295,36 +1295,38 @@ function showLostModeScreen() {
     overlay.id = "veilLostModeOverlay";
 
     overlay.innerHTML = `
-    <div style="width:100%;max-width:420px;text-align:center;padding:30px;box-sizing:border-box;">
+        <div style="width:100%;max-width:420px;text-align:center;padding:30px;box-sizing:border-box;">
 
-        <div style="width:90px;height:90px;margin:0 auto 25px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:45px;">
-            🔒
+            <div style="width:90px;height:90px;margin:0 auto 25px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:45px;">
+                🔒
+            </div>
+
+            <h1 style="margin:0 0 15px;font-size:28px;color:#fff;">VEIL</h1>
+
+            <h2 style="margin:0 0 15px;font-size:20px;color:#fff;">
+                PERANGKAT HILANG
+            </h2>
+
+            <p style="margin:0;color:#cbd5e1;line-height:1.6;font-size:14px;">
+                Perangkat ini sedang dalam mode kehilangan. Jika Anda menemukannya, silakan hubungi pemilik.
+            </p>
+
+            <div id="veilOwnerMessage" style="display:none;margin-top:20px;padding:16px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-word;text-align:left;"></div>
+
+            <a href="https://wa.me/6283890104817"
+               target="_blank"
+               rel="noopener noreferrer"
+               style="display:block;margin-top:25px;padding:16px;border-radius:12px;background:#16a34a;color:#fff;text-decoration:none;font-size:15px;font-weight:bold;">
+                💬 HUBUNGI PEMILIK VIA WHATSAPP
+            </a>
+
+            <div style="margin-top:20px;padding:15px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:13px;">
+                🔐 Perangkat dilindungi VEIL
+            </div>
+
         </div>
+    `;
 
-        <h1 style="margin:0 0 15px;font-size:28px;color:#fff;">VEIL</h1>
-
-        <h2 style="margin:0 0 15px;font-size:20px;color:#fff;">
-            PERANGKAT HILANG
-        </h2>
-
-        <p style="margin:0;color:#cbd5e1;line-height:1.6;font-size:14px;">
-            Perangkat ini sedang dalam mode kehilangan.
-            Jika Anda menemukannya, silakan hubungi pemilik.
-        </p>
-
-        <a href="https://wa.me/6283890104817"
-           target="_blank"
-           rel="noopener noreferrer"
-           style="display:block;margin-top:25px;padding:16px;border-radius:12px;background:#16a34a;color:#fff;text-decoration:none;font-size:15px;font-weight:bold;">
-            💬 HUBUNGI PEMILIK VIA WHATSAPP
-        </a>
-
-        <div style="margin-top:20px;padding:15px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:13px;">
-            🔐 Perangkat dilindungi VEIL
-        </div>
-
-    </div>
-`;
     Object.assign(overlay.style, {
         position: "fixed",
         inset: "0",
@@ -1337,6 +1339,13 @@ function showLostModeScreen() {
     });
 
     document.body.appendChild(overlay);
+
+    const messageBox = document.getElementById("veilOwnerMessage");
+
+    if (lostMessage.trim()) {
+        messageBox.textContent = "📩 PESAN PEMILIK\n\n" + lostMessage;
+        messageBox.style.display = "block";
+    }
 }
 
 function hideLostModeScreen() {

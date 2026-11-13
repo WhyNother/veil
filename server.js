@@ -1920,6 +1920,9 @@ app.post("/api/lost-mode", (req, res) => {
 
     device.lostMode = enabled;
 
+    device.lostMessage = enabled
+    ? String(req.body.lostMessage || "").trim().slice(0, 200)
+    : "";
 
     console.log(
         "Lost Mode:",
@@ -1941,6 +1944,7 @@ app.post("/api/lost-mode", (req, res) => {
         message: enabled
             ? "Lost Mode aktif."
             : "Lost Mode nonaktif."
+        lostMessage: device.lostMessage,
     });
 
 });
@@ -1984,6 +1988,7 @@ app.post("/api/lost-mode-status", (req, res) => {
         deviceId: deviceId,
         deviceName: device.deviceName,
         lostMode: device.lostMode === true
+        lostMessage: device.lostMessage || "",
     });
 
 });

@@ -1627,7 +1627,6 @@ async function lostModeFeature(deviceIdEncoded) {
 
     try {
 
-        // CEK STATUS LOST MODE SAAT INI
         const statusResponse = await fetch("/api/lost-mode-status", {
             method: "POST",
             headers: {
@@ -1642,25 +1641,40 @@ async function lostModeFeature(deviceIdEncoded) {
         const statusResult = await statusResponse.json();
 
         if (!statusResponse.ok || statusResult.success !== true) {
-            alert(statusResult.message || "Gagal memeriksa status Lost Mode.");
+            alert(statusResult.message || "Gagal memeriksa Lost Mode.");
             return;
         }
 
-        // UBAH STATUS
         const enable = statusResult.lostMode !== true;
 
+        let lostMessage = "";
+
+        if (enable) {
+
+            lostMessage = prompt(
+                "Tulis pesan khusus untuk orang yang menemukan HP:",
+                "HP ini milik saya. Jika ditemukan, mohon hubungi saya melalui WhatsApp. Terima kasih."
+            );
+
+            if (lostMessage === null) return;
+
+            lostMessage = lostMessage.trim().slice(0, 200);
+
+            if (!lostMessage) {
+                alert("Pesan tidak boleh kosong.");
+                return;
+            }
+
+        }
+
         const confirmation = confirm(
-            "🔒 VEIL LOST MODE\n\n" +
-            "Perangkat: " + (device.deviceName || "Perangkat VEIL") +
-            "\n\n" +
-            (enable
-                ? "Aktifkan Lost Mode?"
-                : "Nonaktifkan Lost Mode?")
+            enable
+                ? "Aktifkan Lost Mode dengan pesan khusus?"
+                : "Nonaktifkan Lost Mode?"
         );
 
         if (!confirmation) return;
 
-        // KIRIM PERINTAH KE SERVER
         const response = await fetch("/api/lost-mode", {
             method: "POST",
             headers: {
@@ -1669,14 +1683,15 @@ async function lostModeFeature(deviceIdEncoded) {
             body: JSON.stringify({
                 email: email,
                 deviceId: deviceId,
-                enabled: enable
+                enabled: enable,
+                lostMessage: lostMessage
             })
         });
 
         const result = await response.json();
 
         if (!response.ok || result.success !== true) {
-            alert(result.message || "Gagal mengubah Lost Mode.");
+            alert(result.message || "Lost Mode gagal diperbarui.");
             return;
         }
 
@@ -1687,11 +1702,8 @@ async function lostModeFeature(deviceIdEncoded) {
         );
 
     } catch (error) {
-
         console.error("VEIL LOST MODE ERROR:", error);
-
-        alert("Tidak dapat terhubung ke server VEIL.");
-
+        alert("Terjadi kesalahan saat mengatur Lost Mode.");
     }
 }
 

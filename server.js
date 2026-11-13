@@ -10,7 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "6mb" }));
 
 app.use(express.static(__dirname));
 
@@ -1607,67 +1607,55 @@ app.post("/api/remove-device", (req, res) => {
 
 
 // =====================================================
-// PESAN KE PERANGKAT
+// PESAN KE PERANGKAT - MESSAGE QUEUE
 // =====================================================
 
 app.post("/api/send-message", (req, res) => {
+    const email = normalizeEmail(req.body.email);
 
-    const email =
-        normalizeEmail(req.body.email);
+    const deviceId = String(
+        req.body.deviceId || ""
+    ).trim();
 
-    const deviceId =
-        String(
-            req.body.deviceId || ""
-        ).trim();
+    const text = String(
+        req.body.text || ""
+    ).trim();
 
-    const text =
-        String(
-            req.body.text || ""
-        ).trim();
+    const audioDataUrl = String(
+        req.body.audioDataUrl || ""
+    );
 
-    const speak =
-        req.body.speak !== false;
-
-
-    // =================================================
-    // VALIDASI
-    // =================================================
-
-    if (!email) {
+    // Validasi
+    if (!email || !deviceId) {
         return res.status(400).json({
             success: false,
-            message: "Email diperlukan."
+            message: "Email dan Device ID diperlukan."
         });
     }
 
-    if (!deviceId) {
+    if (!text && !audioDataUrl) {
         return res.status(400).json({
             success: false,
-            message: "Device ID diperlukan."
+            message: "Pesan atau audio harus diisi."
         });
     }
 
-    if (!text) {
+    if (text.length > 1000) {
         return res.status(400).json({
             success: false,
-            message: "Pesan tidak boleh kosong."
+            message: "Pesan maksimal 1000 karakter."
         });
     }
 
-    if (text.length > 300) {
+    if (audioDataUrl.length > 5800000) {
         return res.status(400).json({
             success: false,
-            message: "Pesan maksimal 300 karakter."
+            message: "Ukuran audio terlalu besar."
         });
     }
 
-
-    // =================================================
-    // CARI AKUN
-    // =================================================
-
-    const account =
-        accounts.get(email);
+    // Cari akun
+    const account = accounts.get(email);
 
     if (!account) {
         return res.status(404).json({
@@ -1676,13 +1664,8 @@ app.post("/api/send-message", (req, res) => {
         });
     }
 
-
-    // =================================================
-    // CARI PERANGKAT
-    // =================================================
-
-    const device =
-        account.devices.get(deviceId);
+    // Cari perangkat
+    const device = account.devices.get(deviceId);
 
     if (!device) {
         return res.status(404).json({
@@ -1691,51 +1674,90 @@ app.post("/api/send-message", (req, res) => {
         });
     }
 
+    // Buat antrean jika belum tersedia
+    if (!Array.isArray(device.messageQueue)) {
+        device.messageQueue = [];
+    }
 
-    // =================================================
-    // SIMPAN PESAN
-    // =================================================
-
-    device.messageRequest = {
-
-        requestId:
-            crypto.randomUUID(),
-
-        text:
-            text,
-
-        speak:
-            speak,
-
-        createdAt:
-            Date.now()
-
+    // Buat pesan baru
+    const request = {
+        requestId: crypto.randomUUID(),
+        text: text,
+        audioDataUrl: audioDataUrl,
+        createdAt: Date.now()
     };
 
+    // Masukkan ke antrean
+    device.messageQueue.push(request);
+
+    // Maksimal 20 pesan dalam antrean
+    if (device.messageQueue.length > 20) {
+        device.messageQueue.shift();
+    }
 
     console.log(
-        "Pesan dikirim ke:",
+        "VEIL PESAN:",
         device.deviceName,
         "|",
-        text
+        request.requestId
     );
 
+    return res.json({
+        success: true,
+        message: "Pesan berhasil masuk antrean.",
+        queueLength: device.messageQueue.length
+    });
+});
+
+
+// =====================================================
+// PERANGKAT MENGAMBIL PESAN
+// =====================================================
+
+app.post("/api/message-request", (req, res) => {
+    const email = normalizeEmail(req.body.email);
+
+    const deviceId = String(
+        req.body.deviceId || ""
+    ).trim();
+
+    if (!email || !deviceId) {
+        return res.status(400).json({
+            success: false,
+            message: "Email dan Device ID diperlukan."
+        });
+    }
+
+    const account = accounts.get(email);
+
+    if (!account) {
+        return res.status(404).json({
+            success: false,
+            message: "Akun tidak ditemukan."
+        });
+    }
+
+    const device = account.devices.get(deviceId);
+
+    if (!device) {
+        return res.status(404).json({
+            success: false,
+            message: "Perangkat tidak ditemukan."
+        });
+    }
+
+    if (!Array.isArray(device.messageQueue)) {
+        device.messageQueue = [];
+    }
+
+    // Ambil satu pesan dari antrean
+    const request = device.messageQueue.shift() || null;
 
     return res.json({
-
         success: true,
-
-        message:
-            "Pesan berhasil dikirim.",
-
-        deviceId:
-            deviceId,
-
-        deviceName:
-            device.deviceName
-
+        request: request,
+        queueLength: device.messageQueue.length
     });
-
 });
 
 
@@ -1962,176 +1984,6 @@ app.post("/api/lost-mode-status", (req, res) => {
         deviceId: deviceId,
         deviceName: device.deviceName,
         lostMode: device.lostMode === true
-    });
-
-});
-
-
-// =====================================================
-// PESAN PERANGKAT
-// =====================================================
-
-app.post("/api/send-message", (req, res) => {
-
-    const email =
-        normalizeEmail(req.body.email);
-
-    const deviceId =
-        String(
-            req.body.deviceId || ""
-        ).trim();
-
-    const message =
-        String(
-            req.body.message || ""
-        ).trim();
-
-    if (!email || !deviceId) {
-
-        return res.status(400).json({
-            success: false,
-            message:
-                "Email dan Device ID diperlukan."
-        });
-
-    }
-
-    if (!message) {
-
-        return res.status(400).json({
-            success: false,
-            message:
-                "Pesan tidak boleh kosong."
-        });
-
-    }
-
-    const account =
-        accounts.get(email);
-
-    if (!account) {
-
-        return res.status(404).json({
-            success: false,
-            message:
-                "Akun tidak ditemukan."
-        });
-
-    }
-
-    const device =
-        account.devices.get(deviceId);
-
-    if (!device) {
-
-        return res.status(404).json({
-            success: false,
-            message:
-                "Perangkat tidak ditemukan."
-        });
-
-    }
-
-    // Simpan perintah pesan
-    device.messageRequest = {
-
-        requestId:
-            crypto.randomUUID(),
-
-        message:
-            message,
-
-        createdAt:
-            Date.now()
-
-    };
-
-    console.log(
-        "VEIL PESAN:",
-        device.deviceName,
-        "|",
-        message
-    );
-
-    return res.json({
-
-        success: true,
-
-        message:
-            "Pesan berhasil dikirim.",
-
-        request:
-            device.messageRequest
-
-    });
-
-});
-
-
-// =====================================================
-// CEK PESAN PERANGKAT
-// =====================================================
-
-app.post("/api/message-request", (req, res) => {
-
-    const email =
-        normalizeEmail(req.body.email);
-
-    const deviceId =
-        String(
-            req.body.deviceId || ""
-        ).trim();
-
-    if (!email || !deviceId) {
-
-        return res.status(400).json({
-            success: false,
-            message:
-                "Email dan Device ID diperlukan."
-        });
-
-    }
-
-    const account =
-        accounts.get(email);
-
-    if (!account) {
-
-        return res.status(404).json({
-            success: false,
-            message:
-                "Akun tidak ditemukan."
-        });
-
-    }
-
-    const device =
-        account.devices.get(deviceId);
-
-    if (!device) {
-
-        return res.status(404).json({
-            success: false,
-            message:
-                "Perangkat tidak ditemukan."
-        });
-
-    }
-
-    const request =
-        device.messageRequest || null;
-
-    // Setelah dikirim ke HP,
-    // hapus request supaya tidak diputar ulang
-    device.messageRequest = null;
-
-    return res.json({
-
-        success: true,
-
-        request:
-            request
-
     });
 
 });

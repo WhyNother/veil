@@ -1363,8 +1363,9 @@ async function checkMessageRequest() {
         if (!response.ok || result.success !== true || !result.request) return;
 
         const request = result.request;
-        if (request.messageId === lastMessageId) return;
-        lastMessageId = request.messageId;
+
+        if (request.requestId === lastMessageId) return;
+        lastMessageId = request.requestId;
 
         showIncomingMessage(request);
 
@@ -1385,18 +1386,53 @@ function showIncomingMessage(request) {
     const hasAudio = Boolean(request.audioDataUrl);
 
     overlay.innerHTML = `
-        <div style="width:92%;max-width:430px;text-align:center;padding:26px;box-sizing:border-box;">
+        <div style="
+            width:92%;
+            max-width:430px;
+            text-align:center;
+            padding:26px;
+            box-sizing:border-box;
+        ">
             <div style="font-size:52px;margin-bottom:15px;">🔊</div>
-            <div style="font-size:13px;color:#80bfff;letter-spacing:2px;margin-bottom:10px;">VEIL MESSAGE</div>
-            <div style="font-size:24px;font-weight:bold;color:#fff;line-height:1.45;white-space:pre-wrap;word-break:break-word;">
+
+            <div style="
+                font-size:13px;
+                color:#80bfff;
+                letter-spacing:2px;
+                margin-bottom:10px;
+            ">
+                VEIL MESSAGE
+            </div>
+
+            <div style="
+                font-size:24px;
+                font-weight:bold;
+                color:#fff;
+                line-height:1.45;
+                white-space:pre-wrap;
+                word-break:break-word;
+            ">
                 ${escapeMessageHtml(text || "Pesan suara dari VEIL")}
             </div>
 
-            <button id="veilPlayMessage" style="margin-top:24px;width:100%;height:50px;border:0;border-radius:12px;background:#1683ff;color:#fff;font-weight:bold;font-size:15px;">
-                🔊 ${hasAudio ? "PUTAR SUARA" : "BACA PESAN"}
-            </button>
+            <div id="veilMessageStatus" style="
+                margin-top:20px;
+                color:#80bfff;
+                font-size:13px;
+            ">
+                ${hasAudio ? "🔊 Memutar suara..." : "🔊 Membacakan pesan..."}
+            </div>
 
-            <button id="veilCloseMessage" style="margin-top:10px;width:100%;height:44px;border:1px solid #334155;border-radius:12px;background:#151d29;color:#cbd5e1;font-weight:bold;">
+            <button id="veilCloseMessage" style="
+                margin-top:20px;
+                width:100%;
+                height:44px;
+                border:1px solid #334155;
+                border-radius:12px;
+                background:#151d29;
+                color:#cbd5e1;
+                font-weight:bold;
+            ">
                 TUTUP
             </button>
         </div>
@@ -1415,51 +1451,54 @@ function showIncomingMessage(request) {
 
     document.body.appendChild(overlay);
 
-    const playButton = document.getElementById("veilPlayMessage");
-
-    playButton.onclick = async function() {
-        try {
-            if (request.audioDataUrl) {
-                const audio = new Audio(request.audioDataUrl);
-                audio.volume = 1;
-                await audio.play();
-            } else if (text && "speechSynthesis" in window) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = "id-ID";
-                utterance.rate = 1;
-                utterance.pitch = 1;
-                window.speechSynthesis.speak(utterance);
-            }
-        } catch (error) {
-            console.error("VEIL PLAY MESSAGE ERROR:", error);
-            playButton.textContent = "⚠️ Tekan lagi untuk memutar";
-        }
-    };
+    let audio = null;
 
     document.getElementById("veilCloseMessage").onclick = function() {
-        if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+        if (audio) {
+            audio.pause();
+            audio = null;
+        }
+
+        if ("speechSynthesis" in window) {
+            window.speechSynthesis.cancel();
+        }
+
         overlay.remove();
     };
 
-    // Coba putar otomatis. Browser boleh memblokir autoplay; tombol tetap tersedia.
-    if (request.audioDataUrl) {
-        const autoAudio = new Audio(request.audioDataUrl);
-        autoAudio.volume = 1;
-        autoAudio.play().catch(() => {
-            playButton.textContent = "🔊 PUTAR SUARA";
+    // PUTAR AUDIO OTOMATIS
+    if (hasAudio) {
+
+        audio = new Audio(request.audioDataUrl);
+        audio.volume = 1;
+
+        audio.play().then(() => {
+            document.getElementById("veilMessageStatus").textContent =
+                "🔊 Suara sedang diputar";
+        }).catch(error => {
+            console.warn("Autoplay diblokir browser:", error);
+
+            document.getElementById("veilMessageStatus").textContent =
+                "⚠️ Browser memblokir pemutaran otomatis";
         });
-    } else if (text && "speechSynthesis" in window) {
-        try {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = "id-ID";
-            utterance.rate = 1;
-            window.speechSynthesis.speak(utterance);
-        } catch (error) {
-            console.warn("VEIL TTS gagal:", error);
-        }
+
     }
+
+    // BACA TEKS OTOMATIS
+    else if (text && "speechSynthesis" in window) {
+
+        window.speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+
+        utterance.lang = "id-ID";
+        utterance.rate = 1;
+        utterance.pitch = 1;
+
+        window.speechSynthesis.speak(utterance);
+
+    }
+
 }
 
 function escapeMessageHtml(value) {
@@ -1472,9 +1511,17 @@ function escapeMessageHtml(value) {
 }
 
 function startMessageListener() {
-    if (messageInterval) clearInterval(messageInterval);
+
+    if (messageInterval) {
+        clearInterval(messageInterval);
+    }
+
     checkMessageRequest();
-    messageInterval = setInterval(checkMessageRequest, 3000);
+
+    messageInterval = setInterval(() => {
+        checkMessageRequest();
+    }, 3000);
+
 }
 
 </script>

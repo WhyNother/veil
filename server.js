@@ -1943,7 +1943,7 @@ app.post("/api/lost-mode", (req, res) => {
         lostMode: device.lostMode,
         message: enabled
             ? "Lost Mode aktif."
-            : "Lost Mode nonaktif."
+            : "Lost Mode nonaktif.",
         lostMessage: device.lostMessage,
     });
 

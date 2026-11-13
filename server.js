@@ -1987,8 +1987,8 @@ app.post("/api/lost-mode-status", (req, res) => {
         success: true,
         deviceId: deviceId,
         deviceName: device.deviceName,
-        lostMode: device.lostMode === true
-        lostMessage: device.lostMessage || "",
+        lostMode: device.lostMode === true,
+        lostMessage: device.lostMessage || ""
     });
 
 });
